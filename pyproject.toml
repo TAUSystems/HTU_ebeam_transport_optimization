@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "htu-ebeam-transport-quadrupole-optimization"
+version = "0.1.0"
+description = "Use elegant and GEECS-PythonAPI to optimize electro- and permanent quadrupole magnets in BELLA HTU's electron beam transport system."
+authors = ["Reinier van Mourik <reinier.vanmourik@tausystems.com>"]
+readme = "README.md"
+packages = [{include = "htu_ebeam_transport_quadrupole_optimization"}]
+
+[build-system]
+requires = ["poetry-core", "pykern"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.install.dependencies]
+pykern = "*"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pint = "0.22"
+
+[tool.poetry.group.rsopt.dependencies]
+# rsopt = { git = "https://github.com/radiasoft/rsopt.git", rev = "c176a36", extras = ["full"] }
