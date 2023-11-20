@@ -7,15 +7,13 @@ readme = "README.md"
 packages = [{include = "htu_ebeam_transport_quadrupole_optimization"}]
 
 [build-system]
-requires = ["poetry-core", "pykern"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.group.install.dependencies]
-pykern = "*"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pint = "0.22"
 
-[tool.poetry.group.rsopt.dependencies]
-# rsopt = { git = "https://github.com/radiasoft/rsopt.git", rev = "c176a36", extras = ["full"] }
+# rsopt needs to be installed separately, because it uses pykern for its setup, 
+# which poetry can't make known to it. See README.md
+
