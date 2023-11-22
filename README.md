@@ -11,14 +11,6 @@ If using `poetry` (preferred), `rsopt` needs to be installed into the virtual
 environment created by `poetry` after the other dependencies, because it's not
 possible (afaik) for poetry to provide `rsopt`'s build dependency `pykern`. 
 
-The easiest way[^1] to do this is as follows:
-1. Navigate to the directory containing this README.
-1. Run `poetry install`
-1. Run `poetry run pip install setuptools wheel pykern`
-1. Run `poetry run pip install "rsopt[full] @ git+https://github.com/radiasoft/rsopt"`
-
-This sequence is listed in `INSTALL.sh`, with the addition of a specific `rsopt`
-commit.
-
-[^1] The slightly cleaner way is to build a wheel of `rsopt` in a virtual environment 
-and install the resulting wheel into the `poetry` environment. 
+The `INSTALL.sh` script creates the environment and its dependencies, and it 
+installs `rsopt` and reverts `sirepo` to an older version. See the script for
+details.
