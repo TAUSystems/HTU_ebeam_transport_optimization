@@ -14,6 +14,8 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.10"
 pint = "0.22"
 
+# dependencies for rsopt install
+# pykern 20231114.131313
 pykern = { git = "https://github.com/radiasoft/pykern.git", rev = "8ca316b26d7ac29744985fc9df80e06d997b6645" }
 wheel = "^0.41.3"
 
