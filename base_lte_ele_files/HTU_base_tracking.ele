@@ -1,0 +1,83 @@
+&global_settings 
+    SR_gaussian_limit = 6.0, 
+    exact_normalized_emittance = 1 
+&end 
+  
+&run_setup 
+    lattice = HTU_base_lattice.lte
+        default_order = 2, 
+        use_beamline = B0, 
+        p_central_mev = 100.0, 
+        final            = %s.fin, 
+        output            = %s.out, 
+        centroid        = %s.cen, 
+        sigma            = %s.sig, 
+        final            = %s.fin, 
+        parameters        = %s.param, 
+        magnets            = %s.mag 
+        combine_bunch_statistics = 0, 
+        concat_order             = 0, 
+        print_statistics         = 0, 
+        random_number_seed       = 987654321, 
+        tracking_updates         = 1, 
+        echo_lattice             = 0 
+&end 
+ 
+&twiss_output 
+    matched = 0, 
+        beta_x = 0.00191625, 
+        beta_y = 0.00191625, 
+        alpha_x = 0, 
+        alpha_y = 0, 
+        output_at_each_step=1, 
+        statistics = 1, 
+        filename = %s.twi, 
+        concat_order = 0 
+&end 
+ 
+&run_control 
+    n_steps = 1, 
+        reset_rf_for_each_step    = 1 
+&end 
+ 
+! Link all the bends in the chicane to the first 
+&link_elements target=BEND1, source=BEND1, item=E2, equation=ANGLE, &end 
+&link_elements target=BEND2, source=BEND1, item=ANGLE, equation="0 ANGLE -", &end 
+&link_elements target=BEND2, source=BEND1, item=E1, equation="0 ANGLE -", &end 
+&link_elements target=BEND3, source=BEND1, item=ANGLE, equation="0 ANGLE -", &end 
+&link_elements target=BEND3, source=BEND1, item=E2, equation="0 ANGLE -", &end 
+&link_elements target=BEND4, source=BEND1, item=ANGLE, equation=ANGLE, &end 
+&link_elements target=BEND4, source=BEND1, item=E1, equation=ANGLE, &end 
+ 
+&link_elements target=BEND2, source=BEND1, item=L, equation=L, &end 
+&link_elements target=BEND3, source=BEND1, item=L, equation=L, &end 
+&link_elements target=BEND4, source=BEND1, item=L, equation=L, &end 
+ 
+ 
+&bunched_beam 
+    n_particles_per_bunch = 940, 
+    bunch= %s.bun, 
+    distribution_type[0] = 3*"gaussian", 
+    distribution_cutoff[0] = 3*3, 
+    symmetrize = 0, 
+    enforce_rms_values[0] = 1,1,1, 
+        beta_x = 0.00191625, 
+        beta_y = 0.00191625, 
+        alpha_x = 0, 
+        alpha_y = 0, 
+    sigma_dp = 0.00000E-2, 
+    sigma_s = 1.0E-6, 
+    emit_nx = 1.5e-06, 
+    emit_ny = 1.5e-06, 
+    momentum_chirp = 0.0, 
+    halton_radix[0] =2,3,2,3,2,3, 
+    centroid[0] = -0.000, 
+    centroid[1] = -0.00, 
+    centroid[2] = -0.000, 
+    centroid[3] = 0.00, 
+    randomize_order[0] = 2,2,2 
+&end 
+ 
+&track &end 
+ 
+&stop &end 
