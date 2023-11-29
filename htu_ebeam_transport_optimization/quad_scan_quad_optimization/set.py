@@ -3,13 +3,15 @@
 
 from __future__ import annotations
 
+from ..types import QuadConfiguration
+
 class QuadSetProgram:
     """Base class for a program that sets property values of quadrupoles
     """
     def __init__(self):
         pass
 
-    def set_quad_properties(self):
+    def set_quad_properties(self, quadrupole_configuration: QuadConfiguration):
         raise NotImplementedError("set_quad_properties() should be implemented by derived class")
 
 class ManualQuadSet(QuadSetProgram):
@@ -18,7 +20,7 @@ class ManualQuadSet(QuadSetProgram):
     def __init__(self):
         super().__init__()
     
-    def set_quad_properties(self):
+    def set_quad_properties(self, quadrupole_configuration: QuadConfiguration):
         pass
 
 class GEECSPythonAPIQuadSet(QuadSetProgram):
@@ -27,6 +29,5 @@ class GEECSPythonAPIQuadSet(QuadSetProgram):
     def __init__(self):
         super().__init__()
 
-    def set_quad_properties(self):
+    def set_quad_properties(self, quadrupole_configuration: QuadConfiguration):
         pass
-

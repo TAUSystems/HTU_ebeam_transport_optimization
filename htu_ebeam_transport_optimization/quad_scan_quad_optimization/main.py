@@ -8,6 +8,8 @@ magnet settings, and setting the quadrupoles with new values.
 
 from __future__ import annotations
 
+from ..types import QuadScanImage, QuadConfiguration
+
 from . import scan as scan_programs
 from . import optimize as optimize_programs
 from . import set as set_programs
@@ -29,7 +31,7 @@ class QuadScanQuadOptimization:
 
     QUAD_SET_PROGRAMS = {
         'manual': set_programs.ManualQuadSet,
-        'geecspythonapi': set_programs.GEECSPythonAPIQuadSet,
+        'geecs_python_api': set_programs.GEECSPythonAPIQuadSet,
     }
 
     def __init__(self, 
@@ -52,10 +54,13 @@ class QuadScanQuadOptimization:
         self.quad_optimize_program: optimize_programs.QuadOptimizeProgram = self.QUAD_OPTIMIZE_PROGRAMS[quad_optimize_method]()
         self.quad_set_program: set_programs.QuadSetProgram = self.QUAD_SET_PROGRAMS[quad_set_method]()
 
+    def run_one_iteration(self):
+        quad_scan_images: list[QuadScanImage] = self.quad_scan_program.run_quad_scan()
+        optimal_quad_configuration: QuadConfiguration = self.quad_optimize_program.run_optimization(quad_scan_images)
+        self.quad_set_program.set_quad_properties(optimal_quad_configuration)
 
     def run(self):
-        pass
-
+        self.run_one_iteration()
 
 if __name__ == "__main__":
     qsqo = QuadScanQuadOptimization()
