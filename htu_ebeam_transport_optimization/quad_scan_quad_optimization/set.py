@@ -12,7 +12,7 @@ class QuadSetProgram:
     def set_quad_properties(self):
         raise NotImplementedError("set_quad_properties() should be implemented by derived class")
 
-class ManualQuadScan(QuadSetProgram):
+class ManualQuadSet(QuadSetProgram):
     """ Requests an operator to set properties
     """
     def __init__(self):
@@ -21,7 +21,7 @@ class ManualQuadScan(QuadSetProgram):
     def set_quad_properties(self):
         pass
 
-class GEECSPythonAPIQuadScan(QuadSetProgram):
+class GEECSPythonAPIQuadSet(QuadSetProgram):
     """ Uses GEECS-PythonAPI to set property values
     """
     def __init__(self):
