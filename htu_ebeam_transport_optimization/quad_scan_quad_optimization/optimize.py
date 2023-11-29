@@ -14,7 +14,22 @@ class QuadOptimizeProgram:
     
 
 class ElegantOptimizer(QuadOptimizeProgram):
-    """ Use elegant to optimize quadrupole settings.
+    """ Use elegant to optimize quadrupole settings 
+    
+    Calculates quadrupole settings that will produce bunches with desired Twiss
+    parameters
+
+    """
+    def __init__(self):
+        super.__init__()
+    
+    def run_optimization(self):
+        pass
+
+class RSOptOptimizer(QuadOptimizeProgram):
+    """ Use RSOpt to optimize quadrupole settings
+
+    Runs optimizer whose objective is the result of elegant tracking simulations.
     """
     def __init__(self):
         super.__init__()
