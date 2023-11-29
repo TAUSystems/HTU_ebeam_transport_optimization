@@ -12,5 +12,4 @@ environment created by `poetry` after the other dependencies, because it's not
 possible (afaik) for poetry to provide `rsopt`'s build dependency `pykern`. 
 
 The `INSTALL.sh` script creates the environment and its dependencies, and it 
-installs `rsopt` and reverts `sirepo` to an older version. See the script for
-details.
+installs `rsopt`
