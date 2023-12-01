@@ -4,7 +4,11 @@ version = "0.1.0"
 description = "Use elegant and GEECS-PythonAPI to optimize electro- and permanent quadrupole magnets in BELLA HTU's electron beam transport system."
 authors = ["Reinier van Mourik <reinier.vanmourik@tausystems.com>"]
 readme = "README.md"
-packages = [{include = "htu_ebeam_transport_quadrupole_optimization"}]
+packages = [{include = "htu_ebeam_transport_optimization"}]
+
+[tool.poetry.group.htu_ebeam_transport_optimization]
+
+[tool.poetry.group.rsopt_simulation_manager]
 
 [build-system]
 requires = ["poetry-core"]
@@ -12,7 +16,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pint = "0.22"
 
 # dependencies for rsopt install
 # pykern 20231114.131313
@@ -22,3 +25,11 @@ wheel = "^0.41.3"
 # rsopt needs to be installed separately, because it uses pykern for its setup, 
 # which poetry can't make known to it. See README.md
 
+[tool.poetry.group.htu_ebeam_transport_optimization.dependencies]
+pint = "0.22"
+
+[tool.poetry.group.rsopt_simulation_manager.dependencies]
+flask = "2.0.*"
+werkzeug = "2.0.*"   # flask's dependency is Werkzeug >=2.0, but >=2.1 is actually incompatible 
+flask-wtf = "^1.2.1"
+python-decouple = "^3.8"
