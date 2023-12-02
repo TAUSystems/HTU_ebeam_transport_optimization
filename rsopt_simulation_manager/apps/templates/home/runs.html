@@ -33,24 +33,26 @@
                   <th scope="col" class="sort" data-sort="datetime">Date/Time</th>
                   <th scope="col" class="sort" data-sort="experiment">Experiment</th>
                   <th scope="col" class="sort" data-sort="description">Description</th>
-                  <th scope="col" class="sort" data-sort="num_runs">Status</th>
+                  <th scope="col" class="sort" data-sort="status">Status</th>
                 </tr>
               </thead>
               <tbody class="list">
+                {% for item in run_table_items %}
                 <tr>
                   <th scope="row">
-                    <a href="runs.html?datetime=2023-12-01T16:18:23">2023-12-01 16:18:23</a>
+                    <a href="/runs?datetime={{item.datetime}}">{{item.datetime}}</a>
                   </th>
                   <td>
-                    <a href="experiments.html?name=quad_scan_with_jitter">quad_scan_with_jitter</a>
-                  </td>
-                  <td class="budget">
-                    Set start to xx and end to xx.
+                    <a href="/experiments?name={{item.experiment}}">{{item.experiment}}</a>
                   </td>
                   <td>
-                    Success
+                    {{item.description}}
+                  </td>
+                  <td>
+                    {{item.status}}
                   </td>
                 </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>

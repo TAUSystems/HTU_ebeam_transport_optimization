@@ -36,17 +36,19 @@
                 </tr>
               </thead>
               <tbody class="list">
+                {% for item in experiment_table_items %}
                 <tr>
                   <th scope="row">
-                    <a href="experiments.html?name=quad_scan_with_jitter">quad_scan_with_jitter</a>
+                    <a href="/experiments?name={{item.name}}">{{item.name}}</a>
                   </th>
-                  <td class="budget">
-                    Quadrupole scan where noise is added to position, angle, and momentum.
+                  <td>
+                    {{item.description}}
                   </td>
                   <td>
-                    40
+                    {{item.num_runs}}
                   </td>
                 </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>

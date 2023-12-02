@@ -3,6 +3,9 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+from typing import NamedTuple
+from datetime import datetime
+
 from apps.home import blueprint
 from flask import render_template, request
 from jinja2 import TemplateNotFound
@@ -14,25 +17,69 @@ def index():
     return render_template('home/index.html', segment='index')
 
 
-@blueprint.route('/<template>')
-def route_template(template):
+@blueprint.route('/experiments')
+def list_experiments(name=None):
 
-    try:
+    if name is None:
+        """ List all experiments """
 
-        if not template.endswith('.html'):
-            template += '.html'
+        Experiment = NamedTuple("Experiment", name=str, description=str, num_runs=int)
 
-        # Detect the current page
-        segment = get_segment(request)
+        experiment_table_items = [
+            Experiment(
+                name = "quad_scan_with_jitter",
+                description = "Quadrupole scan where noise is added to position, angle, and momentum.",
+                num_runs = 14,
+            )
+        ]
 
-        # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("home/" + template, segment=segment)
+        return render_template("home/experiments.html", experiment_table_items=experiment_table_items)
 
-    except TemplateNotFound:
+    else:
+        # TODO
         return render_template('home/page-404.html'), 404
 
-    except:
-        return render_template('home/page-500.html'), 500
+
+@blueprint.route('/runs')
+def list_runs(datetime_str = None):
+
+    if datetime_str is None:
+
+        Run = NamedTuple("Run", datetime=datetime, description=str, experiment=str, status=str)
+
+        run_table_items = [
+            Run(
+                datetime = datetime(2023, 12, 1, 18, 33, 12),
+                description = "start changed to xx",
+                experiment = "quad_scan_with_jitter",
+                status = "Success",
+            )
+        ]
+
+        return render_template("home/runs.html", run_table_items=run_table_items)
+
+    else:
+        return render_template('home/page-404.html'), 404
+
+# @blueprint.route('/<template>')
+# def route_template(template):
+
+#     try:
+
+#         if not template.endswith('.html'):
+#             template += '.html'
+
+#         # Detect the current page
+#         segment = get_segment(request)
+
+#         # Serve the file (if exists) from app/templates/home/FILE.html
+#         return render_template("home/" + template, segment=segment)
+
+#     except TemplateNotFound:
+#         return render_template('home/page-404.html'), 404
+
+#     except:
+#         return render_template('home/page-500.html'), 500
 
 
 # Helper - Extract current page name from request
