@@ -10,13 +10,12 @@ from apps.home import blueprint
 from flask import render_template, request
 from jinja2 import TemplateNotFound
 
-@blueprint.route('/')
 @blueprint.route('/index')
 def index():
 
     return render_template('home/index.html', segment='index')
 
-
+@blueprint.route('/')
 @blueprint.route('/experiments')
 def list_experiments(name=None):
 
