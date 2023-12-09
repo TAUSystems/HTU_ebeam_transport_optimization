@@ -7,8 +7,10 @@ from typing import NamedTuple
 from datetime import datetime
 
 from apps.home import blueprint
-from flask import render_template, request
-from jinja2 import TemplateNotFound
+from flask import render_template, request, redirect
+
+from ..logic.experiments import create_new_experiment
+from ..logic.runs import run_simulation, get_runs
 
 @blueprint.route('/index')
 def index():
@@ -22,43 +24,26 @@ def list_experiments(name=None):
     if name is None:
         """ List all experiments """
 
-        Experiment = NamedTuple("Experiment", name=str, description=str, num_runs=int)
-
-        experiment_table_items = [
-            Experiment(
-                name = "quad_scan_with_jitter",
-                description = "Quadrupole scan where noise is added to position, angle, and momentum.",
-                num_runs = 14,
-            )
-        ]
-
         return render_template("home/experiments.html", experiment_table_items=experiment_table_items)
 
     else:
         # TODO
         return render_template('home/page-404.html'), 404
 
+@blueprint.route('/experiments/new', methods=['GET', 'POST'])
+def new_experiment():
+    if request.method == 'POST':
+        create_new_experiment(request.form)
+        return redirect('/experiments')
+
+    else:
+        return render_template('home/new_experiment.html')
+
+
 
 @blueprint.route('/runs')
 def list_runs(datetime_str = None):
-
-    if datetime_str is None:
-
-        Run = NamedTuple("Run", datetime=datetime, description=str, experiment=str, status=str)
-
-        run_table_items = [
-            Run(
-                datetime = datetime(2023, 12, 1, 18, 33, 12),
-                description = "start changed to xx",
-                experiment = "quad_scan_with_jitter",
-                status = "Success",
-            )
-        ]
-
-        return render_template("home/runs.html", run_table_items=run_table_items)
-
-    else:
-        return render_template('home/page-404.html'), 404
+    return render_template("home/runs.html", run_table_items=get_runs(datetime_str))
 
 
 @blueprint.app_errorhandler(404) 
