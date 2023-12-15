@@ -35,10 +35,12 @@ def convert_npy_to_sdds(folder, npy_filename):
     np.savetxt(csv_filename, csv_data, delimiter=",", header=header, comments="")
 
     # Convert csv to sdds using the command line
-    sdds_filename = folder + rootname + ".sdds"
-    subprocess.run(['csv2sdds', csv_filename, '-columnData=name=x,type=double', '-columnData=name=xp,type=double',
-                    '-columnData=name=y,type=double', '-columnData=name=yp,type=double',
-                    '-columnData=name=t,type=double', '-columnData=name=p,type=double', sdds_filename])
+    sdds_filename = folder + rootname + ".input"
+    subprocess.run(['csv2sdds', csv_filename, '-skiplines=1',
+                    '-columnData=name=x,type=float,units=m', '-columnData=name=xp,type=float',
+                    '-columnData=name=y,type=float,units=m', '-columnData=name=yp,type=float',
+                    '-columnData=name=t,type=float,units=s', '-columnData=name=p,type=float,units=m$be$nc',
+                    sdds_filename])
 
     return sdds_filename
 
