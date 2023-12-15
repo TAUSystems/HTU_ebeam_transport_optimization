@@ -45,8 +45,10 @@ def convert_npy_to_sdds(folder, npy_filename):
     return sdds_filename
 
 
-def post_process_elegant_beamfiles():
+def post_process_elegant_beamfiles(relative_directory_path=None):
     # Loop through all files with the .w1 extension and execute the command
+    if relative_directory_path is not None:
+        os.chdir(relative_directory_path)
     for filename in glob.glob('*.w1'):
         subprocess.run(
             ['sddsprocess', filename, f'{filename}.proc', '-define=parameter,speedOfLight,2.999792458e8,units=m',
