@@ -1,0 +1,32 @@
+codes:
+  - elegant:
+      settings:
+          bunched_beam.Po: 195.695
+          bunched_beam.n_particles_per_bunch: 500
+          bunched_beam.centroid: 0.0, 0.00, 0.0, 0.0
+          bunched_beam.sigma_dp: 0.0
+          VQ1.DX: 0
+          VQ3.DX: 0
+          VQ5.DX: 0
+          VQ7.DX: 0		  
+      parameters:
+        S3.HKICK:
+          min: -0.0005
+          max: 0.0005
+          start: -0.000
+          samples: 21
+        S4.HKICK:
+          min: -0.0005
+          max: 0.0005
+          start: -0.000
+          samples: 21
+      setup:
+        preprocess: [preprocess.py, f_pre]
+        postprocess: [postprocess.py, obj_f]
+        input_file: steering_scan.ele
+        execution_type: serial
+        cores: 1
+options:
+  software: mesh_scan
+  run_dir: elegant_scan
+  nworkers: 10

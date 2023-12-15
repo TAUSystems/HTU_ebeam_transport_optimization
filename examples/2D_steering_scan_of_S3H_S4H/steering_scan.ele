@@ -1,0 +1,93 @@
+&global_settings 
+    SR_gaussian_limit = 6.0, 
+    exact_normalized_emittance = 1 
+&end 
+ 
+&divide_elements
+	name = *
+	maximum_length = 0.01
+&end
+
+&run_setup 
+    lattice = HTU_base_lattice_matched.lte 
+        default_order = 2, 
+        use_beamline = B1, 
+        p_central_mev = 100.0, 
+        final            = %s.fin, 
+        output            = %s.out, 
+        centroid        = %s.cen, 
+        sigma            = %s.sig, 
+        final            = %s.fin, 
+        parameters        = %s.param, 
+        magnets            = %s.mag 
+        combine_bunch_statistics = 0, 
+        concat_order             = 0, 
+        print_statistics         = 0, 
+        random_number_seed       = 987654321, 
+        tracking_updates         = 1, 
+        echo_lattice             = 0 
+&end 
+ 
+&twiss_output 
+    matched = 0, 
+        beta_x = 0.002, 
+        beta_y = 0.002, 
+        alpha_x = 0, 
+        alpha_y = 0, 
+        output_at_each_step=1, 
+        statistics = 1, 
+        filename = %s.twi, 
+        concat_order = 0 
+&end 
+ 
+&run_control 
+    n_steps = 1, 
+        reset_rf_for_each_step    = 1 
+&end 
+
+&link_elements target=PMQ2H, source=PMQ1V, item=DX, equation=DX, &end 
+&link_elements target=PMQ3V, source=PMQ1V, item=DX, equation=DX, &end
+&link_elements target=PMQ2H, source=PMQ1V, item=DY, equation=DY, &end 
+&link_elements target=PMQ3V, source=PMQ1V, item=DY, equation=DY, &end 
+
+&link_elements target=VQ2, source=VQ1, item=DX, equation=DX, &end 
+&link_elements target=VQ2, source=VQ1, item=DY, equation=DY, &end 
+
+&link_elements target=VQ4, source=VQ3, item=DX, equation=DX, &end 
+&link_elements target=VQ4, source=VQ3, item=DY, equation=DY, &end 
+
+&link_elements target=VQ6, source=VQ5, item=DX, equation=DX, &end 
+&link_elements target=VQ6, source=VQ5, item=DY, equation=DY, &end 
+
+&link_elements target=VQ8, source=VQ7, item=DX, equation=DX, &end 
+&link_elements target=VQ8, source=VQ7, item=DY, equation=DY, &end 
+
+!&link_elements target=S4, source=S3, item=HKICK, equation="0 HKICK -" &end 
+
+&bunched_beam 
+    n_particles_per_bunch = 100, 
+	Po = 195.695,
+    bunch= %s.bun, 
+    distribution_type[0] = 3*"gaussian", 
+    distribution_cutoff[0] = 3*3, 
+    symmetrize = 0, 
+    enforce_rms_values[0] = 1,1,1, 
+    beta_x = 0.002, 
+    beta_y = 0.002, 
+    alpha_x = 0, 
+    alpha_y = 0, 
+    sigma_dp = 2.50000E-2, 
+    sigma_s = 1.0E-6, 
+    emit_nx = 1.5e-06, 
+    emit_ny = 1.5e-06, 
+    momentum_chirp = 0.0, 
+    halton_radix[0] =2,3,2,3,2,3, 
+	centroid[0] = 0 0 0 0 0 0
+
+
+&end 
+
+&track &end
+ 
+&stop &end 
+ 
