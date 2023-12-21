@@ -26,7 +26,7 @@ def list_experiments(name=None):
     if name is None:
         """ List all experiments """
 
-        return render_template("home/experiments.html", experiment_table_items=experiment_table_items)
+        return render_template("home/experiments.html", experiment_table_items=get_experiments())
 
     else:
         # TODO
@@ -34,18 +34,33 @@ def list_experiments(name=None):
 
 @blueprint.route('/experiments/new', methods=['GET', 'POST'])
 def new_experiment():
+    
+    form = ExperimentForm()
+    
     if request.method == 'POST':
         create_new_experiment(request.form)
         return redirect('/experiments')
 
     else:
-        return render_template('home/new_experiment.html')
-
+        return render_template('home/new.html', new_item_class="experiment", form=form)
 
 
 @blueprint.route('/runs')
 def list_runs(datetime_str = None):
     return render_template("home/runs.html", run_table_items=get_runs(datetime_str))
+
+@blueprint.route('/runs/new', methods=['GET', 'POST'])
+def new_run():
+    
+    form = RunForm()
+    
+    if request.method == 'POST':
+        run_simulation(request.form)
+        return redirect('/runs')
+
+    else:
+        return render_template('home/new.html', new_item_class="run", form=form)
+
 
 @blueprint.route('/settings', methods=['GET', 'POST'])
 def settings():
