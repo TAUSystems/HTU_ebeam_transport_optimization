@@ -16,6 +16,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+python-dotenv = "^1.0.0"
 
 # dependencies for rsopt install
 # pykern 20231114.131313
@@ -33,3 +34,5 @@ flask = "2.0.*"
 werkzeug = "2.0.*"   # flask's dependency is Werkzeug >=2.0, but >=2.1 is actually incompatible 
 flask-wtf = "^1.2.1"
 python-decouple = "^3.8"
+bootstrap-flask = "^2.3.3"
+platformdirs = "^4.1.0"

@@ -9,6 +9,8 @@ from decouple import config
 from apps.config import config_dict
 from apps import create_app
 
+from flask_bootstrap import Bootstrap5
+
 # WARNING: Don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
@@ -24,6 +26,7 @@ except KeyError:
     exit('Error: Invalid <config_mode>. Expected values [Debug, Production] ')
 
 app = create_app(app_config)
+bootstrap = Bootstrap5(app)
 
 if DEBUG:
     app.logger.info('DEBUG       = ' + str(DEBUG))

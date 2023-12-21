@@ -9,8 +9,10 @@ from datetime import datetime
 from apps.home import blueprint
 from flask import render_template, request, redirect
 
-from ..logic.experiments import create_new_experiment
+from ..logic.experiments import create_new_experiment, get_experiments
 from ..logic.runs import run_simulation, get_runs
+from .forms import ExperimentForm, SettingsForm, RunForm
+from ..logic.settings import save_config, load_config
 
 @blueprint.route('/index')
 def index():
@@ -44,6 +46,22 @@ def new_experiment():
 @blueprint.route('/runs')
 def list_runs(datetime_str = None):
     return render_template("home/runs.html", run_table_items=get_runs(datetime_str))
+
+@blueprint.route('/settings', methods=['GET', 'POST'])
+def settings():
+    
+    form = SettingsForm()
+
+    if form.validate_on_submit():
+        save_config(form.data)
+        return redirect("/")
+
+    else:
+        config = load_config()
+        form.results_path.data = config['results_path']
+        form.rsopt_simulation_files_path.data = config['rsopt_simulation_files_path']
+
+        return render_template("home/settings.html", form=form)
 
 
 @blueprint.app_errorhandler(404) 
