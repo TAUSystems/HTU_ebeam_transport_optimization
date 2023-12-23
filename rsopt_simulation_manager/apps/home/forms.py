@@ -1,15 +1,13 @@
+from __future__ import annotations
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, SelectField
-from wtforms.validators import DataRequired, Length
-
-from operator import attrgetter
-
-from ..logic.experiments import get_experiments
+from wtforms.validators import InputRequired, Regexp
 
 class ExperimentForm(FlaskForm):
     name = StringField("Experiment name", 
-        validators=[DataRequired()], 
-        description="Short name for the experiment."
+        validators=[InputRequired(), Regexp(r'^[^\\/?%*:|"<>\.\s]+$')], 
+        description="Short name for the experiment. May not contain /\?%*:|\"<>. or spaces.",
     )
     
     description = TextAreaField("Description",
