@@ -18,7 +18,7 @@ installs `rsopt`
 ### Startup
 To start the simulation manager, run
 
-```poetry run python rsopt_simulation_manager run.py```
+```poetry run python rsopt_simulation_manager/run.py```
 
 Then open the given address, likely http://127.0.0.1:5000/, in a browser.
 
