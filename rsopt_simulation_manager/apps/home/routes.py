@@ -74,8 +74,8 @@ def settings():
 
     else:
         config = load_config()
-        form.results_path.data = config['results_path']
-        form.rsopt_simulation_files_path.data = config['rsopt_simulation_files_path']
+        form.results_path.data = config['Directories']['results_path']
+        form.rsopt_simulation_files_path.data = config['Directories']['rsopt_simulation_files_path']
 
         return render_template("home/settings.html", form=form)
 
