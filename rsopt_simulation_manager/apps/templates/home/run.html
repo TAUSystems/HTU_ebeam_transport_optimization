@@ -1,0 +1,83 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Run {{ run.datetime.strftime('%Y-%m-%d %H:%M:%S') }} {% endblock title %}
+
+{% block content %}
+
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">{{ run.datetime.strftime('%Y-%m-%d %H:%M:%S') }}</h6>
+          </div>
+          <div class="col-lg-6 col-5 text-right">
+            <a href="/runs/new" class="btn btn-sm btn-neutral">New</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      <div class="col">
+
+        <div class="card card-stats">
+          <!-- Run information -->
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0">Information</h5>
+              </div>
+            </div>
+            <h5>Experiment</h5>
+            <p class="text-sm">{{ run.experiment }}</p>
+            <h5>Description</h5>
+            <p class="text-sm">{{ run.description }}</p>
+            <h5>Status</h5>
+            <p class="text-sm">{{ run.status }}</p>
+          </div>
+        </div>
+
+        <!-- image carousel -->
+        <div class="card card-stats">
+          <div class="card-body">
+            <h5 class="card-title text-uppercase text-muted mb-0">Images</h5>
+            <div id="runImageCarousel" class="carousel slide">
+              <div class="carousel-inner">
+                {% for image_uri in run.get_image_paths() %}
+                  <div class="carousel-item {% if loop.first %} active {% endif %}">
+                    <img src="{{ image_uri }}" class="d-block w-50" alt="...">
+                  </div>
+                {% endfor %}
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+            
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script>
+const carousel = new bootstrap.Carousel('#runImageCarousel')
+</script>
+{% endblock javascripts %}
