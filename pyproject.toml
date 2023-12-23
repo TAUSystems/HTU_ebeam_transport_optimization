@@ -4,7 +4,11 @@ version = "0.1.0"
 description = "Use elegant and GEECS-PythonAPI to optimize electro- and permanent quadrupole magnets in BELLA HTU's electron beam transport system."
 authors = ["Reinier van Mourik <reinier.vanmourik@tausystems.com>"]
 readme = "README.md"
-packages = [{include = "htu_ebeam_transport_optimization"}]
+packages = [
+    {include = "htu_ebeam_transport_optimization"}, 
+    {include = "rsopt_simulation_manager"},
+    {include = "rsopt_interface"}
+]
 
 [tool.poetry.group.htu_ebeam_transport_optimization]
 
