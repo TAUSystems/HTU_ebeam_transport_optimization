@@ -13,3 +13,25 @@ possible (afaik) for poetry to provide `rsopt`'s build dependency `pykern`.
 
 The `INSTALL.sh` script creates the environment and its dependencies, and it 
 installs `rsopt`
+
+## RSOpt Simulation Manager
+### Startup
+To start the simulation manager, run
+
+```poetry run python rsopt_simulation_manager run.py```
+
+Then open the given address, likely http://127.0.0.1:5000/, in a browser.
+
+### Usage
+First, use the Settings tab to set the directory where the simulation files are 
+and the directory where results should be saved.
+
+Create a new Experiment, which represents a collection of similar simulation runs.
+
+Then create a new Run. When you hit "Run simulation", the following command will
+be called from the directory specified by the simulation files directory in Settings:
+
+```rsopt optimize configuration configuration.yml```
+
+So make sure that your configuration is stored in the configuration.yml file.
+
