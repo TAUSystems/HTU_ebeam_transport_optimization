@@ -2,15 +2,15 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+from __future__ import annotations
 
-from typing import NamedTuple
-from datetime import datetime
+from typing import Optional
 
 from apps.home import blueprint
 from flask import render_template, request, redirect
 
 from ..logic.experiments import create_new_experiment, get_experiments
-from ..logic.runs import run_simulation, get_runs
+from ..logic.runs import run_simulation, get_runs, get_run
 from .forms import ExperimentForm, SettingsForm, RunForm
 from ..logic.settings import save_config, load_config
 
@@ -84,6 +84,11 @@ def settings():
 
         return render_template("home/settings.html", form=form)
 
+
+@blueprint.route('/run_images/<run_id>/<rel_image_path>')
+def get_run_image(run_id: str, rel_image_path: str):
+    run = get_run(run_id)
+    return (run.get_path() / rel_image_path).read_bytes()
 
 @blueprint.app_errorhandler(404) 
 def not_found(e): 
