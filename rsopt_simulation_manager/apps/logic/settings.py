@@ -24,7 +24,14 @@ def load_config() -> dict[str, dict[str, str]]:
     cp = ConfigParser()
 
     try:
+        if not config_path().exists():
+            raise FileNotFoundError("Config file does not exist.")
+
         cp.read(config_path())
+
+        if 'Directories' not in cp.sections():
+            raise ValueError("Directories not found in config")
+
         return {section_name: dict(cp.items(section_name)) for section_name in cp.sections()}
 
     except:
