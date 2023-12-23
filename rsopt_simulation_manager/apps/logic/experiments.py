@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import NamedTuple
 from pathlib import Path
 from .settings import load_config
+from .runs import run_folder_generator
 
 Experiment = NamedTuple("Experiment", name=str, description=str, num_runs=int)
 
@@ -14,12 +15,28 @@ def create_new_experiment(form_data: dict):
     (experiment_path / 'description.txt').write_text(form_data['description'])
 
 def get_experiments() -> list[Experiment]:
-    experiment_table_items = [
-        Experiment(
-            name = "quad_scan_with_jitter",
-            description = "Quadrupole scan where noise is added to position, angle, and momentum.",
-            num_runs = 14,
-        )
-    ]
+    config = load_config()
 
-    return experiment_table_items
+    experiments = []    
+
+    for p in Path(config['Directories']['results_path']).iterdir():
+        if not p.is_dir():
+            continue
+
+        experiment_name = p.name
+        experiment_path = Path(config['Directories']['results_path']) / experiment_name
+
+        try:
+            description = (experiment_path / 'description.txt').read_text()
+        except FileNotFoundError:
+            description = ""
+
+        experiments.append(
+            Experiment(
+                name = experiment_name,
+                description = description,
+                num_runs = sum(1 for _ in run_folder_generator(experiment_name)),
+            )
+        )
+
+    return experiments
