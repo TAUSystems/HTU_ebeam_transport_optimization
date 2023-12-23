@@ -1,13 +1,20 @@
 from __future__ import annotations
-from typing import Optional, NamedTuple
-from datetime import datetime
-from .experiments import get_experiments
 
+from flask import url_for
+
+from typing import Optional, Union
+from datetime import datetime
+from pathlib import Path
+from os import walk as os_walk
+import re
+from typing import Generator
+from shutil import copytree
+from .settings import load_config
+
+from rsopt_interface.run_rsopt import run_rsopt
 
 RUN_ID_DATETIME_FORMAT = "%Y-%m-%dT%H-%M-%S"
 
-def run_simulation(form: dict):
-    print(form)
 class Run:
     def __init__(self, 
                  datetime: datetime,
@@ -75,6 +82,34 @@ def get_run(run_id: Union[str, datetime]) -> Run:
     return Run(datetime.strptime(run_folder.name, RUN_ID_DATETIME_FORMAT), 
                run_folder.parent.name
               )
+
+def run_simulation(form_data: dict):
+    run = Run(datetime.now(), form_data['experiment_name'])
+
+    # create directory and store description and status
+    run_path = run.get_path()
+    run_path.mkdir(parents=False, exist_ok=False)
+
+    (run_path / 'description.txt').write_text(form_data['description'])
+    (run_path / 'status.txt').write_text("starting")
+
+    # copy files from simulation files folder
+    config = load_config()
+    copytree(
+        Path(config['Directories']['rsopt_simulation_files_path']), 
+        run_path / 'input_files'
+    )
+    
+    # start the simulation
+    (run_path / 'status.txt').write_text("running")
+    
+    run_rsopt(
+        Path(config['Directories']['rsopt_simulation_files_path']), 
+        run_path
+    )
+
+
+
 def run_folder_generator(experiment_name: Optional[str] = None) -> Generator[Path, None, None]:
     config = load_config()
 
