@@ -21,16 +21,8 @@ def index():
 
 @blueprint.route('/')
 @blueprint.route('/experiments')
-def list_experiments(name=None):
-
-    if name is None:
-        """ List all experiments """
-
-        return render_template("home/experiments.html", experiment_table_items=get_experiments())
-
-    else:
-        # TODO
-        return render_template('home/page-404.html'), 404
+def list_experiments():
+    return render_template("home/experiments.html", experiment_table_items=get_experiments())
 
 @blueprint.route('/experiments/new', methods=['GET', 'POST'])
 def new_experiment():
