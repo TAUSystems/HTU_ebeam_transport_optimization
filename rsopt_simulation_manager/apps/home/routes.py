@@ -37,7 +37,7 @@ def new_experiment():
     
     form = ExperimentForm()
     
-    if request.method == 'POST':
+    if form.validate_on_submit():
         create_new_experiment(request.form)
         return redirect('/experiments')
 
@@ -53,8 +53,9 @@ def list_runs(datetime_str = None):
 def new_run():
     
     form = RunForm()
-    
-    if request.method == 'POST':
+    form.experiment_name.choices = [experiment.name for experiment in get_experiments()]
+
+    if form.validate_on_submit():
         run_simulation(request.form)
         return redirect('/runs')
 

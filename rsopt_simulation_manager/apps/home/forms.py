@@ -17,9 +17,7 @@ class ExperimentForm(FlaskForm):
     submit = SubmitField("Create experiment")
 
 class RunForm(FlaskForm):
-    experiment_name = SelectField("Experiment name", 
-        choices = map(attrgetter('name'), get_experiments() ),
-    )
+    experiment_name = SelectField("Experiment name")  # choices added after instantiation in new_run()
 
     description = TextAreaField("Description",
         description="Notes about this specific run"
