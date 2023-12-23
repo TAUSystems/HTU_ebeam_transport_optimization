@@ -46,8 +46,13 @@ def new_experiment():
 
 
 @blueprint.route('/runs')
-def list_runs(datetime_str = None):
-    return render_template("home/runs.html", run_table_items=get_runs(datetime_str))
+def list_runs():
+    experiment_name = request.args.get('experiment_name', None)
+    return render_template("home/runs.html", run_table_items=get_runs(experiment_name))
+
+@blueprint.route('/runs/<run_id>')
+def show_run(run_id: str):
+    return render_template("home/run.html", run=get_run(run_id))
 
 @blueprint.route('/runs/new', methods=['GET', 'POST'])
 def new_run():

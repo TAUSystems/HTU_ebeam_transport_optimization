@@ -59,23 +59,55 @@ class Run:
         (self.get_path() / 'status.txt').write_text(value)
 
 
-def get_runs(experiment_name: Optional[str] = None) -> list[Run]:
-    def get_runs_for_experiment(experiment_name: str):
-        if experiment_name == 'quad_scan_with_jitter':
-            run_table_items = [
-                Run(
-                    datetime = datetime(2023, 12, 1, 18, 33, 12),
-                    description = "start changed to xx",
-                    experiment = "quad_scan_with_jitter",
-                    status = "Success",
-                )
-            ]
-        else:
-            raise ValueError("No experiment with that name.")
-
-        return run_table_items
-
-    if experiment_name is None:
-        return sum([get_runs_for_experiment(experiment.name) for experiment in get_experiments()], [])
+def get_run(run_id: Union[str, datetime]) -> Run:
+    if isinstance(run_id, datetime):
+        run_datetime = run_id.strftime(RUN_ID_DATETIME_FORMAT)
+    elif isinstance(run_id, str):
+        run_datetime = run_id
+    
+    for run_folder in run_folder_generator():
+        if run_folder.name == run_datetime:
+            break
+    
     else:
-        return get_runs_for_experiment(experiment_name)
+        raise ValueError(f"No run found with run id {run_id}")
+
+    return Run(datetime.strptime(run_folder.name, RUN_ID_DATETIME_FORMAT), 
+               run_folder.parent.name
+              )
+def run_folder_generator(experiment_name: Optional[str] = None) -> Generator[Path, None, None]:
+    config = load_config()
+
+    def experiment_run_folder_generator(experiment_name: str):
+        experiment_path = Path(config['Directories']['results_path']) / experiment_name
+
+        datetime_regex = re.compile("\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}")
+        for p in experiment_path.iterdir():
+            if p.is_dir() and datetime_regex.match(p.name):
+                yield p
+    
+    if experiment_name is not None:
+        yield from experiment_run_folder_generator(experiment_name)
+
+    else:
+        for p in Path(config['Directories']['results_path']).iterdir():
+            if p.is_dir():
+                yield from experiment_run_folder_generator(p.name)
+
+
+def get_runs(experiment_name: Optional[str] = None) -> list[Run]:
+
+    runs = []
+    
+    for run_folder in run_folder_generator(experiment_name):
+        dt = datetime.strptime(run_folder.name, RUN_ID_DATETIME_FORMAT)
+        experiment = run_folder.parent.name
+
+        runs.append(
+            Run(
+                datetime = dt,
+                experiment = experiment,
+            )
+        )
+
+    return runs
