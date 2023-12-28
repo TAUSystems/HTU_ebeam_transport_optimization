@@ -97,15 +97,15 @@ def run_simulation(form_data: dict):
     config = load_config()
     copytree(
         Path(config['Directories']['rsopt_simulation_files_path']), 
-        run_path / 'input_files'
+        run_path / 'input'
     )
     
     # start the simulation
     (run_path / 'status.txt').write_text("running")
     
     run_rsopt(
-        Path(config['Directories']['rsopt_simulation_files_path']), 
-        run_path
+        run_path,
+        run_path / 'input', 
     )
 
 
