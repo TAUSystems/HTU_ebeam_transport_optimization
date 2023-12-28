@@ -9,7 +9,7 @@ from typing import Optional
 from apps.home import blueprint
 from flask import render_template, request, redirect
 
-from ..logic.experiments import create_new_experiment, get_experiments
+from ..logic.experiments import create_new_experiment, get_experiments, get_experiment
 from ..logic.runs import run_simulation, get_runs, get_run
 from .forms import ExperimentForm, SettingsForm, RunForm
 from ..logic.settings import save_config, load_config
@@ -23,6 +23,10 @@ def index():
 @blueprint.route('/experiments')
 def list_experiments():
     return render_template("home/experiments.html", experiment_table_items=get_experiments())
+
+@blueprint.route('/experiments/<experiment_name>')
+def show_experiment(experiment_name: str):
+    return render_template("home/experiment.html", experiment=get_experiment(experiment_name))
 
 @blueprint.route('/experiments/new', methods=['GET', 'POST'])
 def new_experiment():

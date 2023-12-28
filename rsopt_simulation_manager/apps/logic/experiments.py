@@ -40,3 +40,30 @@ def get_experiments() -> list[Experiment]:
         )
 
     return experiments
+
+
+def get_experiment(experiment_name: str) -> Experiment:
+    config = load_config()
+
+    for p in Path(config['Directories']['results_path']).iterdir():
+        if not p.is_dir():
+            continue
+
+        if p.name == experiment_name:
+            break
+
+    else:
+        raise ValueError(f"experiment '{experiment_name}' not found.")
+
+    experiment_path = Path(config['Directories']['results_path']) / experiment_name
+
+    try:
+        description = (experiment_path / 'description.txt').read_text()
+    except FileNotFoundError:
+        description = ""
+
+    return Experiment(
+                name = experiment_name,
+                description = description,
+                num_runs = sum(1 for _ in run_folder_generator(experiment_name)),
+            )
