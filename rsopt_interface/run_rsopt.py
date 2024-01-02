@@ -15,7 +15,7 @@ def _rsopt_process(run_path: Path, rsopt_simulation_files_path: Path):
     # run rsopt
     os.chdir(rsopt_simulation_files_path)
     subprocess.run(
-        ['rsopt', 'optimize', 'configuration', 'configuration.yml'], 
+        ['sh', './run.sh'], 
         cwd=rsopt_simulation_files_path
     )
     (run_path / 'status.txt').write_text('finished')

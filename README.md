@@ -15,23 +15,11 @@ The `INSTALL.sh` script creates the environment and its dependencies, and it
 installs `rsopt`
 
 ## RSOpt Simulation Manager
-### Startup
-To start the simulation manager, run
+Please see [resopt_simulation_manager/README.md](rsopt_simulation_manager/README.md) 
+for full instructions. But to get started: 
 
-```poetry run python rsopt_simulation_manager/run.py```
-
-Then open the given address, likely http://127.0.0.1:5000/, in a browser.
-
-### Usage
-First, use the Settings tab to set the directory where the simulation files are 
-and the directory where results should be saved.
-
-Create a new Experiment, which represents a collection of similar simulation runs.
-
-Then create a new Run. When you hit "Run simulation", the following command will
-be called from the directory specified by the simulation files directory in Settings:
-
-```rsopt optimize configuration configuration.yml```
-
-So make sure that your configuration is stored in the configuration.yml file.
-
+1. Start the simulation manager with `poetry run python rsopt_simulation_manager/run.py` 
+   and open the given address in a browser.
+1. Set the RSOpt files and results directories in Settings
+1. Create an Experiment 
+1. Start a Run 
