@@ -5,6 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 from __future__ import annotations
 
 from typing import Optional
+from operator import attrgetter
 
 from apps.home import blueprint
 from flask import render_template, request, redirect
@@ -44,7 +45,7 @@ def new_experiment():
 @blueprint.route('/runs')
 def list_runs():
     experiment_name = request.args.get('experiment_name', None)
-    return render_template("home/runs.html", run_table_items=get_runs(experiment_name))
+    return render_template("home/runs.html", run_table_items=sorted(get_runs(experiment_name), key=attrgetter('datetime'), reverse=True))
 
 @blueprint.route('/runs/<run_id>')
 def show_run(run_id: str):
