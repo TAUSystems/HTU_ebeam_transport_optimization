@@ -14,17 +14,24 @@ def _rsopt_process(run_path: Path, rsopt_simulation_files_path: Path):
 
     # run rsopt
     os.chdir(rsopt_simulation_files_path)
-    subprocess.run(
+    completed_process = subprocess.run(
         ['sh', './run.sh'], 
-        cwd=rsopt_simulation_files_path
+        cwd=rsopt_simulation_files_path,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
     )
-    (run_path / 'status.txt').write_text('finished')
+
+    (run_path / 'output.log').write_text(completed_process.stdout)
+
+    if completed_process.returncode == 0:
+        (run_path / 'status.txt').write_text('success')
+
+    else:
+        (run_path / 'status.txt').write_text('failed')
 
     # move output files
     (run_path / 'output').mkdir(parents=True, exist_ok=False)
     for p in rsopt_simulation_files_path.iterdir():
         if p not in simulation_files_folders:
-            print(f"moving {p}")
             shutil_move(p, (run_path / 'output'))
 
 
