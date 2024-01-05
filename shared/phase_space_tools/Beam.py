@@ -205,7 +205,7 @@ class SDDSBeam(Beam):
 
     def __init__(self, beam_data):
         """
-        Initialize a beam using a 6D phase space saved in a .npy file
+        Initialize a beam using a 6D phase space read from a .proc.plainbin file using utils function
         :param beam_data: the output of the utils function
         """
         super().__init__(np.shape(beam_data)[0])
