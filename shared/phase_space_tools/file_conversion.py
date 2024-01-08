@@ -15,10 +15,10 @@ const_lightspeed = 299792458  # m/s
 const_electronmass = 0.511e6  # eV
 
 
-def convert_npy_to_sdds(folder, npy_filename):
+def convert_npy_to_sdds(output_folder, npy_directory, npy_filename):
     # Read the numpy file
     rootname = os.path.splitext(npy_filename)[0]
-    numpy_data = np.load(folder + rootname + ".npy")
+    numpy_data = np.load(npy_directory + rootname + ".npy")
 
     # Get into the appropriate units with appropriate ordering
     beam_x = numpy_data[0]
@@ -31,11 +31,11 @@ def convert_npy_to_sdds(folder, npy_filename):
     # Convert to csv and write
     csv_data = np.column_stack([beam_x, beam_xp, beam_y, beam_yp, beam_t, beam_p])
     header = ",".join(['x', 'xp', 'y', 'yp', 't', 'p'])  # Define the column names for the CSV
-    csv_filename = folder + rootname + ".csv"
+    csv_filename = npy_directory + rootname + ".csv"
     np.savetxt(csv_filename, csv_data, delimiter=",", header=header, comments="")
 
     # Convert csv to sdds using the command line
-    sdds_filename = folder + rootname + ".input"
+    sdds_filename = output_folder + rootname + ".input"
     subprocess.run(['csv2sdds', csv_filename, '-skiplines=1',
                     '-columnData=name=x,type=float,units=m', '-columnData=name=xp,type=float',
                     '-columnData=name=y,type=float,units=m', '-columnData=name=yp,type=float',
