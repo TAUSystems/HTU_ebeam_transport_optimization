@@ -139,7 +139,8 @@ class Beam:
     def get_pz(self):
         return self.pz
 
-    def plot_transverse_phase_space(self, num_bins=20, scale=1e3):
+    def plot_transverse_phase_space(self, num_bins=50, title=None):
+        scale = 1e3
         fig, ax = plt.subplots(2, 2, figsize=(9, 7))
         mycmap = plt.get_cmap('viridis')
         mycmap.set_under(color='white')  # map 0 to this color
@@ -161,12 +162,27 @@ class Beam:
         ax[1, 1].set_xlabel("y [mm]")
         ax[1, 1].set_ylabel("yp [mrad]")
 
+        fig.suptitle(title)
         fig.tight_layout()
         plt.show()
 
         return
 
-    def plot_longitudinal_phase_space(self, num_bins=50):
+    def plot_transverse_spot_image(self, num_bins=50, title=None):
+        scale = 1e3
+        plt.figure(figsize=(5, 4))
+        mycmap = plt.get_cmap('viridis')
+        mycmap.set_under(color='white')  # map 0 to this color
+
+        plt.hist2d(self.get_x()*scale, self.get_y()*scale, bins=num_bins, cmap=mycmap)
+        plt.xlabel("x [mm]")
+        plt.ylabel("y [mm]")
+        plt.title(title)
+        plt.show()
+
+        return
+
+    def plot_longitudinal_phase_space(self, num_bins=50, title=None):
         plt.figure(figsize=(5, 4))
         mycmap = plt.get_cmap('viridis')
         mycmap.set_under(color='white')  # map 0 to this color
@@ -174,8 +190,20 @@ class Beam:
         plt.hist2d(self.get_z()*1e6, self.get_pz()/1e6, bins=num_bins, cmap=mycmap)
         plt.xlabel("z [um]")
         plt.ylabel("pz [MeV]")
+        plt.title(title)
         plt.show()
 
+        return
+
+    def print_statistics(self):
+        print("x_ave,   y_ave:  ", self.calculate_x_average(), self.calculate_y_average())
+        print("px_ave,  py_ave: ", self.calculate_xp_average(), self.calculate_yp_average())
+        print("beta_x,  beta_y: ", self.calculate_x_beta(), self.calculate_y_beta())
+        print("alpha_x, alpha_y:", self.calculate_x_alpha(), self.calculate_y_alpha())
+        print("gamma_x, gamma_y:", self.calculate_x_gamma(), self.calculate_y_gamma())
+        print("emitn_x, emitn_y:", self.calculate_x_emittance_n(), self.calculate_y_emittance_n())
+        print("gamma_L, Energy, E_spread(%): ", self.calculate_gamma_lorentz(),
+              self.calculate_average_energy_eV() / 1e6, self.calculate_energy_spread())
         return
 
 class NumpyBeam(Beam):
