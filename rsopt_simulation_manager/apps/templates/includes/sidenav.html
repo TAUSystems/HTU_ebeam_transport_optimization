@@ -1,0 +1,35 @@
+<nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+  <div class="scrollbar-inner">
+    <!-- Brand -->
+    <div class="sidenav-header  align-items-center">
+      <a class="navbar-brand" href="/">
+        <img src="/static/assets/img/brand/blue.png" class="navbar-brand-img" alt="Argon Design - Jinja Template Logo.">
+      </a>
+    </div>
+    <div class="navbar-inner">
+      <!-- Collapse -->
+      <div class="collapse navbar-collapse" id="sidenav-collapse-main">
+        <!-- Nav items -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link {% if 'experiments' in segment %} active {% endif %}" href="/experiments">
+              <i class="ni ni-bullet-list-67 text-default"></i>
+              <span class="nav-link-text">Experiments</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'runs' in segment %} active {% endif %}" href="/runs">
+              <i class="ni ni-bullet-list-67 text-default"></i>
+              <span class="nav-link-text">Runs</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'settings' in segment %} active {% endif %}" href="/settings">
+              <i class="ni ni-bullet-list-67 text-default"></i>
+              <span class="nav-link-text">Settings</span>
+            </a>
+          </li>
+      </div>
+    </div>
+  </div>
+</nav>
