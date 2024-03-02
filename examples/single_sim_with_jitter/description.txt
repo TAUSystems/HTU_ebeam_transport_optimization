@@ -1,0 +1,7 @@
+Input files for executing a series of elegant simulations through rsopt to simulate the impact of jitter. The lattice was optimized to match a given source distribution to the undulatory fodo lattice. In comparison to the current configuration on the HTU beam line, there are slight differences in PMQ separations.
+
+Jitter is implemented through a combination of the preprocess.py file and the single_sim_with_jitter.yml file. It's implemented in a slightly workaround way. A dummy variable in the .ele file is scanned, e.g. the run_setup.semaphore_file. It's a string not used in any useful way otherwise. This allows rsopt to run multiple simulations with different random seeds that are used in preprocess.py. 
+
+postprocess.py, uses existing spatial calibrations and ROIs of beam profile monitors to make a composite image on each profile monitor in HTU by summing up the images from the individual simulations. 
+
+This workflow is meant as a basis for simple one-off checks to see how changes in any parameter in the beam line or source will impact our direct observables. Changinge elegant parameters requires some basic understanding of accelerator physics and the elegant software.

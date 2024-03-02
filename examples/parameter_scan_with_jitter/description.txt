@@ -1,0 +1,5 @@
+
+This workflow builds on the single_sim_with_jitter example. With this, you can execute 1D scans of parameters in the HTU beam line. It effectively executes multiple single_sim_with_jitter simulations and does some basic organization. The given example performs a scan of EMQ3H quadrupole strength. But any parameter can be used. 
+
+To use, simply edit the scan.py file. Change the scan_parameter_name to any element/variable combination from the .lte file and chose the values you want to simulate for it. 
+

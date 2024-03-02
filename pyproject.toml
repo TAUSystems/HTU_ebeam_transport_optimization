@@ -32,6 +32,8 @@ wheel = "^0.41.3"
 
 [tool.poetry.group.htu_ebeam_transport_optimization.dependencies]
 pint = "0.22"
+imageio = "^2.30"
+matplotlib = "^3.7"
 
 [tool.poetry.group.rsopt_simulation_manager.dependencies]
 flask = "2.0.*"
