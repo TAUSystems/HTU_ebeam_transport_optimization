@@ -1,0 +1,35 @@
+codes:
+- elegant:
+    parameters:
+      run_setup.semaphore_file:
+        max: 1
+        min: 0
+        samples: 10
+        start: 0
+      PMQ1V.DX:
+        max: 0.001
+        min: -0.001
+        samples: 1
+        start: 0
+    settings:
+      bunched_beam.Po: 195.695
+      bunched_beam.beta_x: 0.0005
+      bunched_beam.beta_y: 0.0005
+      bunched_beam.centroid: 0.0, 0.00, 0.0, 0.0
+      bunched_beam.n_particles_per_bunch: 500
+      bunched_beam.sigma_dp: 0.025
+    setup:
+      cores: 1
+      execution_type: serial
+      input_file: HTU_base_run.ele
+      postprocess:
+      - postprocess.py
+      - obj_f
+      preprocess:
+      - preprocess.py
+      - f_pre
+options:
+  nworkers: 10
+  run_dir: elegant_scan
+  seed: null
+  software: mesh_scan

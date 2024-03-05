@@ -4,7 +4,13 @@ version = "0.1.0"
 description = "Use elegant and GEECS-PythonAPI to optimize electro- and permanent quadrupole magnets in BELLA HTU's electron beam transport system."
 authors = ["Reinier van Mourik <reinier.vanmourik@tausystems.com>"]
 readme = "README.md"
-packages = [{include = "htu_ebeam_transport_quadrupole_optimization"}]
+packages = [
+    {include = "htu_ebeam_transport_optimization"}
+]
+
+[tool.poetry.group.htu_ebeam_transport_optimization]
+
+[tool.poetry.group.rsopt_simulation_manager]
 
 [build-system]
 requires = ["poetry-core"]
@@ -12,7 +18,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pint = "0.22"
+python-dotenv = "^1.0.0"
 
 # dependencies for rsopt install
 # pykern 20231114.131313
@@ -22,3 +28,11 @@ wheel = "^0.41.3"
 # rsopt needs to be installed separately, because it uses pykern for its setup, 
 # which poetry can't make known to it. See README.md
 
+[tool.poetry.group.htu_ebeam_transport_optimization.dependencies]
+pint = "0.22"
+imageio = "^2.30"
+matplotlib = "^3.7"
+
+[tool.poetry.group.rsopt_simulation_manager.dependencies]
+# tau_simulation_manager = { git = "https://github.com/TAUSystems/TAU_simulation_manager.git", rev = "d1632686a7d6e935a761e4bcc256be61f1f44957" }
+tau_simulation_manager = { path = "../simulation_manager/", develop = false }
