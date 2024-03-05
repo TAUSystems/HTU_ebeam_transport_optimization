@@ -5,9 +5,7 @@ description = "Use elegant and GEECS-PythonAPI to optimize electro- and permanen
 authors = ["Reinier van Mourik <reinier.vanmourik@tausystems.com>"]
 readme = "README.md"
 packages = [
-    {include = "htu_ebeam_transport_optimization"}, 
-    {include = "rsopt_simulation_manager"},
-    {include = "rsopt_interface"}
+    {include = "htu_ebeam_transport_optimization"}
 ]
 
 [tool.poetry.group.htu_ebeam_transport_optimization]
@@ -36,9 +34,5 @@ imageio = "^2.30"
 matplotlib = "^3.7"
 
 [tool.poetry.group.rsopt_simulation_manager.dependencies]
-flask = "2.0.*"
-werkzeug = "2.0.*"   # flask's dependency is Werkzeug >=2.0, but >=2.1 is actually incompatible 
-flask-wtf = "^1.2.1"
-python-decouple = "^3.8"
-bootstrap-flask = "^2.3.3"
-platformdirs = "^4.1.0"
+# tau_simulation_manager = { git = "https://github.com/TAUSystems/TAU_simulation_manager.git", rev = "d1632686a7d6e935a761e4bcc256be61f1f44957" }
+tau_simulation_manager = { path = "../simulation_manager/", develop = false }
