@@ -1,0 +1,159 @@
+data:
+  EMQ1H.K1:
+    '0': 9.4350700528
+    '1': 8.0198750643
+    '10': 8.0659249884
+    '11': 7.892103753
+    '12': 7.8153089764
+    '2': 4.1207579991
+    '3': 7.7512706907
+    '4': 8.1915256142
+    '5': 8.1845008641
+    '6': 8.3777548974
+    '7': 8.5659345712
+    '8': 7.5681797736
+    '9': 8.3975393748
+  EMQ2V.K1:
+    '0': -7.1195414994
+    '1': -6.6096858251
+    '10': -7.0977206647
+    '11': -7.657153253
+    '12': -8.0455383958
+    '2': -5.9981660242
+    '3': -6.5171531784
+    '4': -6.6729546012
+    '5': -6.6659514751
+    '6': -6.7021102061
+    '7': -6.7318150973
+    '8': -6.5501156889
+    '9': -6.6265730839
+  EMQ3H.K1:
+    '0': 11.8888922594
+    '1': 8.7480389541
+    '10': 8.92605097
+    '11': 8.8600782372
+    '12': 8.7858917625
+    '2': 11.7330519586
+    '3': 8.2135696362
+    '4': 9.1510964851
+    '5': 9.0689703735
+    '6': 9.0035910464
+    '7': 8.8569883402
+    '8': 9.2719888137
+    '9': 8.9313700605
+  f:
+    '0': -673.0675410882
+    '1': -1764.9066022498
+    '10': -2024.0291835991
+    '11': -2702.9103171049
+    '12': -4559.1433341779
+    '2': -1298.0596728539
+    '3': -1075.8341954774
+    '4': -1390.4867839401
+    '5': -1473.5121427512
+    '6': -1572.5990822822
+    '7': -1183.8507075372
+    '8': -1166.7000731062
+    '9': -1138.3960157676
+  xopt_error:
+    '0': false
+    '1': false
+    '10': false
+    '11': false
+    '12': false
+    '2': false
+    '3': false
+    '4': false
+    '5': false
+    '6': false
+    '7': false
+    '8': false
+    '9': false
+  xopt_runtime:
+    '0': 14.217774709
+    '1': 14.330482833
+    '10': 14.5517512501
+    '11': 14.1589607081
+    '12': 14.232592792
+    '2': 14.4876802081
+    '3': 14.369879417s
+    '4': 14.073099875
+    '5': 14.120820041
+    '6': 14.245947209
+    '7': 14.294514959
+    '8': 14.0925601249
+    '9': 14.5710801251
+dump_file: bayes_UCB.yaml
+evaluator:
+  function: __main__.simulation_optimize
+  function_kwargs:
+    iteration: 0
+  max_workers: 1
+  vectorized: false
+generator:
+  beta: 0.1
+  computation_time:
+    acquisition_optimization:
+      '0': 0.027432167
+      '1': 0.037596042
+      '2': 0.0271447501
+      '3': 0.0473328329
+      '4': 0.049107417
+      '5': 0.0337555
+      '6': 0.0481361659
+      '7': 0.033235
+      '8': 0.034868375
+      '9': 0.068316167
+    training:
+      '0': 0.081507292
+      '1': 0.068999458
+      '2': 0.020204791
+      '3': 0.0235145
+      '4': 0.0235137499
+      '5': 0.02303525
+      '6': 0.0222954169
+      '7': 0.0248335421
+      '8': 0.028819
+      '9': 0.0501205829
+  fixed_features: null
+  gp_constructor:
+    covar_modules: {}
+    mean_modules: {}
+    name: standard
+    trainable_mean_keys: []
+    transform_inputs: true
+    use_low_noise_prior: false
+  log_transform_acquisition_function: false
+  max_travel_distances: null
+  n_candidates: 1
+  n_interpolate_points: null
+  n_monte_carlo_samples: 128
+  name: upper_confidence_bound
+  numerical_optimizer:
+    max_iter: 2000
+    max_time: null
+    n_restarts: 20
+    name: LBFGS
+  supports_batch_generation: true
+  turbo_controller: null
+  use_cuda: false
+max_evaluations: null
+serialize_inline: false
+serialize_torch: false
+strict: true
+vocs:
+  constants: {}
+  constraints: {}
+  objectives:
+    f: MINIMIZE
+  observables: []
+  variables:
+    EMQ1H.K1:
+    - 4.0
+    - 10.0
+    EMQ2V.K1:
+    - -10.0
+    - -4.0
+    EMQ3H.K1:
+    - 6.0
+    - 12.0
