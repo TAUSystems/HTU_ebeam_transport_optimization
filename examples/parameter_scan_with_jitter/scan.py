@@ -2,35 +2,31 @@ import yaml
 import subprocess
 from pathlib import Path
 
-def add_or_modify_yaml_parameter(file_path, parameter_path, parameter_values):
+def add_or_modify_yaml_parameter(file_path, parameter_path, value):
     """
     Add or modify a parameter in the YAML file under 'parameters'.
     
     Parameters:
     - file_path: Path to the YAML file.
     - parameter_path: Path to the parameter (e.g., ['codes', 'elegant', 'parameters', 'EMQ3H.K1']).
-    - parameter_values: A dictionary of the parameter attributes to add or modify (e.g., {'max': 20, 'min': -20, 'samples': 1, 'start': 9.7}).
+    - value: the value to set the parameter to).
     """
     with open(file_path) as f:
         data = yaml.safe_load(f)
     
     temp = data
-    for index, key in enumerate(parameter_path[:-1]):
-        if isinstance(temp, list):  # Check if current node is a list
-            # Assuming the structure under 'codes' and that we're targeting the first item
-            if key == 'codes' and index == 0:  # 'codes' is expected to be the first in the path
-                temp = temp[0]  # Access the first item for 'codes'
-            else:
-                # This else block is to handle other potential list accesses, adapt as necessary
-                print("Error: Unhandled list encountered in the path")
-                return
-        else:
-            if key not in temp:
-                temp[key] = {}
-            temp = temp[key]
+    print(data)
+    print(data['codes'][0]['elegant']['parameters'])
 
-    # Assign the new or modified parameter values
-    temp[parameter_path[-1]] = parameter_values
+    if parameter_path[-1] in temp['codes'][0]['elegant']['parameters']:
+        del temp['codes'][0]['elegant']['parameters'][parameter_path[-1]]
+        
+    temp['codes'][0]['elegant']['parameters'][parameter_path[-1]] = parameter_values
+    temp['codes'][0]['elegant']['parameters'][parameter_path[-1]]['start'] = value
+    
+    #     # Assign the new or modified parameter values
+    # else:
+    #     print('scan parameter already in file. remvoe and try again')
     
     with open(file_path, 'w') as f:
         yaml.safe_dump(data, f, default_flow_style=False)
@@ -47,7 +43,7 @@ def run_simulation_and_summary(yaml_file, setting_path, values):
     """
     for value in values:
         # Modify the YAML file for the current value
-        add_or_modify_yaml_parameter(yaml_file, setting_path, {'start': value})
+        add_or_modify_yaml_parameter(yaml_file, setting_path, value)
         
         # Run rsopt command
         subprocess.run(['rsopt', 'sample', 'configuration', yaml_file], check=True)
