@@ -1,12 +1,16 @@
-from typing import NamedTuple, NewType, Annotated
+from typing import NamedTuple, NewType, Annotated, Any
 from numpy.typing import NDArray
-from . import ureg
 
-DimensionlessQuantity = NewType("DimensionlessQuantity", Annotated[ureg.Quantity, ''])
-LengthQuantity = NewType("LengthQuantity", Annotated[ureg.Quantity, '[length]'])
-InverseLengthSquaredQuantity = NewType("InverseLengthSquaredQuantity", Annotated[ureg.Quantity, '[length]^-2'])
-LengthPerAngleQuantity = NewType("LengthPerAngleQuantity", Annotated[ureg.Quantity, '[length] / [angle]'])
-LengthAngleQuantity = NewType("LengthAngleQuantity", Annotated[ureg.Quantity, '[length] * [angle]'])
+Measurement = NewType("Measurement", Any)
+OptimalParameters = NewType("OptimalParameters", Any)
+
+from pint import Quantity
+
+DimensionlessQuantity = NewType("DimensionlessQuantity", Annotated[Quantity, ''])
+LengthQuantity = NewType("LengthQuantity", Annotated[Quantity, '[length]'])
+InverseLengthSquaredQuantity = NewType("InverseLengthSquaredQuantity", Annotated[Quantity, '[length]^-2'])
+LengthPerAngleQuantity = NewType("LengthPerAngleQuantity", Annotated[Quantity, '[length] / [angle]'])
+LengthAngleQuantity = NewType("LengthAngleQuantity", Annotated[Quantity, '[length] * [angle]'])
 
 # a run_quad_scan() result is a list of QuadScanImage 
 class QuadScanImage(NamedTuple):
