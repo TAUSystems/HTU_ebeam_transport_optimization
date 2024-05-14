@@ -1,0 +1,118 @@
+
+
+! FIX this conversion factors. 
+% 100.0 0.0033356 * sto Brho
+% 2.91 Brho / sto Amp2Tm
+
+Q: CHARGE,TOTAL=25.0E-12 
+M1: MARK,FITPOINT=1 
+Mchicane: MARK,FITPOINT=1 
+watchpoint: WATCH,FILENAME="%s-%03ld.w1",MODE="COORD" 
+
+SrcToPMQ1: EDRIFT,L=0.046
+
+PMQ1V: KQUAD,L=0.02903, BORE=0.006, B=-1.242,  N_SLICES = 20
+PMQ2H: KQUAD,L=0.02890, BORE=0.006, B=1.242, N_SLICES = 20
+PMQ3V: KQUAD,L=0.016321, BORE=0.006, B=-1.107, N_SLICES = 10	
+ 
+L1: EDRIF,L=0.0397
+L2: EDRIF,L=0.0338
+ 
+PMQTrip: LINE=(PMQ1V,L1,PMQ2H,L2,PMQ3V) 
+ 
+PMQTripToTCPhos: EDRIF,L=0.2
+TCPhosToChicane: EDRIF,L=0.42
+
+BEND1: CSBEND,L=0.175,ANGLE=0.0    
+BEND2: CSBEND,L=0.175   
+BEND3: CSBEND,L=0.175   
+BEND4: CSBEND,L=0.175   
+ 
+L12: EDRIFT,L=0.125   
+L23: EDRIFT,L=0.15   
+  
+Chicane: LINE=(BEND1,L12,BEND2,L23,M1,watchpoint,L23,BEND3,L12,BEND4)   
+
+DriftToDCPhos: EDRIFT,L=0.27   
+DriftToEMQTrip: EDRIFT,L=0.405   
+EMQ1H: KQUAD,L=0.1408,K1=6.279005079493805, n_slices = 10
+EMQL1: EDRIFT,L=0.112735   
+EMQ2V: KQUAD,L=0.28141,K1=-7.732752930218624, n_slices = 20
+EMQL2: EDRIFT,L=0.112735   
+EMQ3H: KQUAD,L=0.1409,K1=9.794000518055004, n_slices = 10
+
+! The following EMQ array the Amp2Tm convertion term might be wrong (FIXING IT)
+!DriftToDCPhos: EDRIFT,L=0.27   
+!DriftToEMQTrip: EDRIFT,L=0.405   
+!EMQ1H: KQUAD,L=0.1408,K1="0.5 Amp2Tm *", n_slices = 10
+!EMQL1: EDRIFT,L=0.112735   
+!EMQ2V: KQUAD,L=0.28141,K1="-1.0 Amp2Tm *", n_slices = 20
+!EMQL2: EDRIFT,L=0.112735   
+!EMQ3H: KQUAD,L=0.1409,K1="1.8 Amp2Tm *", n_slices = 10
+ 
+EMQTriplet: LINE=(EMQ1H,EMQL1,EMQ2V,EMQL2,EMQ3H) 
+
+DriftToPhos1: EDRIFT,L=0.084325  
+DriftToSpec: EDRIFT,L=0.28    
+MagSpec: CSBEND,L=0.4826,ANGLE=0.0   
+ 
+DriftToAline1: EDRIFT,L=0.4009   
+DriftToAline2: EDRIFT,L=0.3825   
+DriftToAline3: EDRIFT,L=0.4191   
+
+DriftToUndulator: EDRIFT,L=0.2945   
+UndulatorAperture: MAXAMP,X_MAX=0.005,Y_MAX=0.003
+
+Aline: LINE=(DriftToAline1, watchpoint, DriftToAline2, watchpoint, DriftToAline3, watchpoint, DriftToUndulator)
+Albac: LINE=(DriftToAline1, watchpoint, DriftToAline2, watchpoint, DriftToAline3, watchpoint)
+
+VQ1: KQUAD,L=0.0504,BORE=0.004, B=0.132,  N_SLICES = 20
+VQ1Cell: LINE=(VQ1)   
+VD: EDRIFT,L=0.018   
+VQ2: KQUAD,L=0.0504,BORE=0.004, B=-0.132,  N_SLICES = 20
+VQ2Cell: LINE=(VQ2)   
+FODOCell1: LINE=(VQ1Cell,VD,2*VQ2Cell,VD,VQ1Cell,watchpoint)   
+FODOCell2: LINE=(VQ1Cell,VD,2*VQ2Cell,VD,VQ1Cell) 
+UndulatorSegment: LINE=(FODOCell1,FODOCell2,FODOCell1,FODOCell2)
+
+! for step zero
+QFT:QUAD,L=0.10,K1=10
+DRT: EDRIFT, L=0.018
+TEST: LINE=(QFT,DRT,QFT)
+
+
+! BB: is for step 1 (backtracking step), it goes up to A3 (watchpoint aftert DriftToAline3)
+! B0: Goes up to the entrance of the undulator
+! B1: Final beam line, this one includes the undulator:
+
+
+BB: LINE=(Q,SrcToPMQ1, PMQTrip, &   
+		PMQTripToTCPhos, watchpoint, &   
+	    TCPhosToChicane, Chicane, &  
+	   	DriftToDCPhos,watchpoint,&   
+	   	DriftToEMQTrip,EMQTriplet,DriftToPhos1,watchpoint, &
+	    DriftToSpec,MagSpec,&
+		Albac) 
+
+
+
+B0: LINE=(Q,SrcToPMQ1, PMQTrip, &   
+		PMQTripToTCPhos, watchpoint, &   
+	    TCPhosToChicane, Chicane, &  
+	   	DriftToDCPhos,watchpoint,&   
+	   	DriftToEMQTrip,EMQTriplet,DriftToPhos1,watchpoint, &
+	    DriftToSpec,MagSpec,&
+		Aline,M1)   
+
+
+B1: LINE=(Q,SrcToPMQ1, PMQTrip, &   
+		PMQTripToTCPhos, watchpoint, &   
+	    TCPhosToChicane, Chicane, &  
+	   	DriftToDCPhos,watchpoint,&   
+	   	DriftToEMQTrip,EMQTriplet,DriftToPhos1,watchpoint, &
+	    DriftToSpec,MagSpec,&
+		Aline,M1,&
+		4*UndulatorSegment)   
+ 
+USE,B0   
+RETURN   

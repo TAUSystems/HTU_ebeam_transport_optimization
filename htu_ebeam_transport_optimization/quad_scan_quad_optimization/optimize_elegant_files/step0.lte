@@ -1,0 +1,79 @@
+% 100.0 0.0033356 * sto Brho
+
+!Amp2Tm: current to strength [ Amperes to T/m ] conversion factor
+!Tm2Amp: strength to current [ T/m to Amperes ] conversion factor
+
+% 0 Brho / sto Amp2Tm
+% 0 sto Tm2Amp
+
+
+target  :       Drift,  L = 0.0
+
+! Permanent Magnet Quadrupole region
+PDR00   :       Drift,  L = 0.05
+PQF01_S :       Quadrupole,     L = "0.02891 10 /",     K1 = "208.18 Brho /"
+PQF01   :       line = (10*PQF01_S)
+PDR01   :       Drift,  L = 0.03874
+PQD02_S :       Quadrupole,     L = "0.02891 10 /",     K1 = "-208.18 Brho /"
+PQD02   :       line = (10*PQD02_S)
+PDR02   :       Drift,  L = 0.06751
+PQF03_S :       Quadrupole,     L = "0.01627 10 /",     K1 = "185.3 Brho /"
+PQF03   :       line = (10*PQF03_S)
+
+! Section from the PM quads (triplet) to the chicane. 
+
+AR100   :       Drift,  L = 0.2
+FLAG1   :       Watch,  Filename = "%s.FL1",    Mode = "coord"
+
+Target2Chicane  :       Line = (target,PDR00,PQF01,PDR01,PQD02,PDR02,PQF03,AR100,FLAG1)
+
+CDR00   :       Drift,  L = 0.41975
+CDM01   :       Rben,   L = 0.175, Angle = 0.0000001
+CDR12   :       Drift,  L = 0.125
+CDM02   :       Rben,   L = 0.175, Angle = -0.0000001
+CDR23   :       Drift,  L = 0.315
+CDM03   :       Rben,   L = 0.175, Angle = -0.0000001
+CDR34   :       Drift,  L = 0.125
+CDM04   :       Rben,   L = 0.175, Angle = 0.0000001
+CDR01   :       Drift,  L = 0.27
+FLAG2   :       Watch,  Filename = "%s.FL2",    Mode = "coord"
+
+Chicane2EMQT    :       Line = (CDR00,CDM01,CDR12,CDM02,CDR23,CDM03,CDR34,CDM04,CDR01,FLAG2)
+
+Target2EMQT : Line = (Target2Chicane,Chicane2EMQT)
+
+! EM quad triplet region.
+
+EDR00   :       Drift,  L = 0.40505
+EQF01   :       Quadrupole,     L = 0.1408, DY=0.0,  K1 =  "0.5 Amp2Tm *"
+EDR01   :       Drift,  L = 0.112735
+EQD02   :       Quadrupole, L = 0.28141,  DY=0.00,    K1 = "-1.0 Amp2Tm *"  
+EDR02   :       Drift,  L = 0.112685
+EQF03   :       Quadrupole,     L = 0.1409, DY=0.0,  K1 = "1.2 Amp2Tm *"
+EDR03   :       Drift,  L = 0.084325
+FLAG3   :       Watch,  Filename = "%s.FL3",    Mode = "coord"
+
+EMT2Spec :  Line = (EDR00,EQF01,EDR01,EQD02,EDR02,EQF03,EDR03,FLAG3)
+
+SDR00   :       Drift,  L = 0.28
+SDM01   :       RBen,   L = 0.4826,     Angle = 0.0000001
+SDR01   :       Drift,  L = 0.55
+FLAG4   :       Watch,  Filename = "%s.FL4",    Mode = "coord"
+
+Spectro1        :       Line = (SDR00,SDM01,SDR01,FLAG4)
+
+Target2Spectro1 : Line = ( Target2EMQT,EMT2Spec,Spectro1)
+
+! Final drift and diagnostics region to the entrance of the undulator
+FDR00   :       Drift,  L = 0.40
+FLAG5   :       Watch,  Filename = "%s.FL5",    Mode = "coord"
+FDR01   :       Drift,  L = 0.54
+FLAG6   :       Watch,  Filename = "%s.FL6",    Mode = "coord"
+FDR02   :       Drift,  L = 0.20
+FLAGU   :       Watch,  Filename = "%s.FLU",    Mode = "coord"
+
+Spectro2Und     :       Line = (FDR00,FLAG5,FDR01,FLAG6,FDR02,FLAGU)
+
+
+
+simple: Line = (CDR00)
