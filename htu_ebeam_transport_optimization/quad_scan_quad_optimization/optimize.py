@@ -2,6 +2,7 @@
 """
 
 from __future__ import annotations
+import tempfile
 
 from ..types import QuadScanImage, QuadConfiguration, TwissParameters
 
@@ -27,10 +28,12 @@ class ElegantOptimizer(QuadOptimizeProgram):
     def _calculate_twiss_parameters(self, quad_scan_images: list[QuadScanImage]) -> TwissParameters:
         pass
 
+    def _run_elegant_optimization(self, twiss_parameters: TwissParameters) -> QuadConfiguration:
+        pass
+
     def run_optimization(self, quad_scan_images: list[QuadScanImage]) -> QuadConfiguration:
         twiss_parameters = self._calculate_twiss_parameters(quad_scan_images)
-
-        
+        return self._run_elegant_optimization(twiss_parameters)
 
 class RSOptOptimizer(QuadOptimizeProgram):
     """ Use RSOpt to optimize quadrupole settings
