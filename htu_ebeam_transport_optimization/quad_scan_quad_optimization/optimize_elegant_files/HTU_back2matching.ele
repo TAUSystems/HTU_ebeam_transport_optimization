@@ -1,0 +1,284 @@
+&global_settings 
+    SR_gaussian_limit = 6.0, 
+    exact_normalized_emittance = 1 
+&end 
+
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!+++++++++++++++++++++++++++ Zero step++++++++++++++++++++++++++
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+! This step is only to create a twiss elegant file with the initial values from the EMQ-3 scan (#22)
+! onto screen A3 on 8/8/23. There should be a different way to do it but this is an easy solution. 
+
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+&run_setup
+        lattice = step0.lte,
+        default_order = 1,
+        use_beamline = "simple",
+        p_central_mev = 100.0
+	    rootname = scan-Q,
+        magnets = %s.step0.mag
+	    final = %s.step0.fin
+	    centroid = %s.step0.cen
+        back_tracking = 0
+&end
+
+!=======================================================
+! Set the twiss parameters from the HTU experiment here:
+!=======================================================
+&twiss_output
+        matched = 0,
+        output_at_each_step=1
+        filename = step0.twi
+        beta_x = <quad_scan_beta_x>, 
+        alpha_x = <quad_scan_alpha_x>,
+        beta_y = <quad_scan_beta_y>, 
+        alpha_y = <quad_scan_alpha_y>,
+        radiation_integrals =1        
+&end
+
+&run_control
+!	n_indices = 1
+&end
+
+&bunched_beam
+&end
+
+&track &end
+
+
+!++++++++++++++++++++++First step (back tracking)++++++++++++++++++++++++++
+! This step backtracks from the end of BB line defined in HTU_base_lattice.lte file. 
+! elegant flag  back_tracking = 1 need to be set, the backtrack is performed from the last element.
+! initial twiss parameter are taken from inputs.twi file generated in the zero step.
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+&run_setup 
+
+    lattice = HTU_base_lattice_matched.lte
+        default_order = 1, 
+        use_beamline = BB, 
+        p_central_mev = 100.0, 
+        final            = %s.step1.fin, 
+        output            = %s.step1.out, 
+        centroid        = %s.step1.cen, 
+        sigma            = %s.step1.sig, 
+        final            = %s.step1.fin, 
+        parameters        = %s.step1.param, 
+        magnets            = step1.mag 
+        combine_bunch_statistics = 0, 
+        concat_order             = 0, 
+        print_statistics         = 0, 
+        random_number_seed       = 987654321, 
+        tracking_updates         = 1, 
+        echo_lattice             = 0, 
+        back_tracking = 1 
+&end 
+
+!============================================================
+! READING the twiss parameters from the zero step; the "_BEG_" string means its reading from inputs.twi the value
+! of the twiss parameters from at the beguinning in this case at A3 screen.
+!============================================================
+
+&twiss_output 
+    matched = 0, 
+        output_at_each_step=1, 
+        statistics = 1, 
+        filename = step1.backtracked.twi, 
+        concat_order = 0 
+        reference_file = "step0.twi"
+        reference_element = "_BEG_" 
+        reflect_reference_values = 0
+&end 
+
+&run_control 
+    n_steps = 1, 
+        reset_rf_for_each_step    = 1 
+&end 
+ 
+! Link all the bends in the chicane to the first 
+&link_elements target=BEND1, source=BEND1, item=E2, equation=ANGLE, &end 
+&link_elements target=BEND2, source=BEND1, item=ANGLE, equation="0 ANGLE -", &end 
+&link_elements target=BEND2, source=BEND1, item=E1, equation="0 ANGLE -", &end 
+&link_elements target=BEND3, source=BEND1, item=ANGLE, equation="0 ANGLE -", &end 
+&link_elements target=BEND3, source=BEND1, item=E2, equation="0 ANGLE -", &end 
+&link_elements target=BEND4, source=BEND1, item=ANGLE, equation=ANGLE, &end 
+&link_elements target=BEND4, source=BEND1, item=E1, equation=ANGLE, &end 
+ 
+&link_elements target=BEND2, source=BEND1, item=L, equation=L, &end 
+&link_elements target=BEND3, source=BEND1, item=L, equation=L, &end 
+&link_elements target=BEND4, source=BEND1, item=L, equation=L, &end 
+ 
+ 
+&bunched_beam 
+&end 
+ 
+&track &end 
+
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! STEP 2, optimizing to the ENTRANCE of the undulator
+! The twiss parameters are taken from SRCTOPMQ1 obtained by the backtracking step 1  
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+&run_setup 
+    lattice =  HTU_base_lattice_matched.lte 
+        default_order = 1, 
+        use_beamline = B0, 
+        p_central_mev = 100.0, 
+        final            = %s.step2.fin, 
+        output            = %s.step2out, 
+        centroid        = %s.step2.cen, 
+        sigma            = %s.step2.sig, 
+        final            = %s.step2.fin, 
+        parameters        = %s.step2.param, 
+        magnets            = %s.step2.mag 
+        combine_bunch_statistics = 0, 
+        concat_order             = 0, 
+        print_statistics         = 0, 
+        random_number_seed       = 987654321, 
+        tracking_updates         = 1, 
+        echo_lattice             = 0 
+&end 
+  
+&twiss_output 
+    matched = 0, 
+        output_at_each_step=1, 
+        statistics = 1, 
+        filename = step2.optimized.twi, 
+        concat_order = 0 
+        reference_file = "step1.backtracked.twi"
+        reference_element = "SRCTOPMQ1"
+        reflect_reference_values = 1
+&end 
+
+&run_control 
+    n_steps = 1, 
+        reset_rf_for_each_step    = 1 
+&end 
+ 
+! Link all the bends in the chicane to the first 
+&link_elements target=BEND1, source=BEND1, item=E2, equation=ANGLE, &end 
+&link_elements target=BEND2, source=BEND1, item=ANGLE, equation="0 ANGLE -", &end 
+&link_elements target=BEND2, source=BEND1, item=E1, equation="0 ANGLE -", &end 
+&link_elements target=BEND3, source=BEND1, item=ANGLE, equation="0 ANGLE -", &end 
+&link_elements target=BEND3, source=BEND1, item=E2, equation="0 ANGLE -", &end 
+&link_elements target=BEND4, source=BEND1, item=ANGLE, equation=ANGLE, &end 
+&link_elements target=BEND4, source=BEND1, item=E1, equation=ANGLE, &end 
+ 
+&link_elements target=BEND2, source=BEND1, item=L, equation=L, &end 
+&link_elements target=BEND3, source=BEND1, item=L, equation=L, &end 
+&link_elements target=BEND4, source=BEND1, item=L, equation=L, &end 
+ 
+&optimization_setup 
+    mode = "minimize", method = "simplex", 
+        target = 1e-8, 
+        tolerance = 1e-16, n_passes = 3, n_evaluations = 500, log_file = /dev/tty, 
+        n_restarts = 10, 
+        verbose = 0, output_sparsing_factor = 10 
+&end 
+ 
+! HERE we set define the optimization terms in this example together: (betax -0.43 )^2 + (betay -0.19 )^2 + alphax^2 + alphay^2
+!100 MeV 
+&optimization_term term = "M1#2.betax 0.43 - sqr" &end 
+&optimization_term term = "M1#2.betay 0.19 - sqr" &end 
+
+&optimization_term term = "M1#2.alphax sqr" &end 
+&optimization_term term = "M1#2.alphay sqr" &end 
+ 
+! The optimization parameter in this case are the position of the EMQ triplet relative to the source,
+! and the currents of EMQ1, EMQ2 and EMQ3. 
+
+&optimization_variable 
+    name = SRCTOPMQ1, item=L, lower_limit=0.025, upper_limit=.2, step_size = 0.000005 &end  
+&optimization_variable 
+    name = EMQ1H, item=K1, lower_limit=-60, upper_limit=60, step_size = 0.01 &end 
+&optimization_variable 
+    name = EMQ2V, item=K1, lower_limit=-60, upper_limit=60, step_size = 0.01 &end 
+&optimization_variable 
+    name = EMQ3H, item=K1, lower_limit=-60, upper_limit=60, step_size = 0.01 &end 
+ 
+
+&bunched_beam 
+    n_particles_per_bunch = 100, 
+    bunch= %s.bun, 
+    distribution_type[0] = 3*"gaussian", 
+    distribution_cutoff[0] = 3*3, 
+    symmetrize = 0, 
+    use_twiss_command_values = 1
+    enforce_rms_values[0] = 1,1,1, 
+    sigma_dp = 2.50000E-2, 
+    sigma_s = 1.0E-6, 
+    emit_nx = 1.5e-06, 
+    emit_ny = 1.5e-06, 
+    momentum_chirp = 0.0, 
+    halton_radix[0] =2,3,2,3,2,3, 
+    randomize_order[0] = 2,2,2 
+&end 
+ 
+&optimize summarize_setup=1 &end 
+ 
+&save_lattice filename = %s3.matched &end 
+
+&divide_elements
+	name = *
+	maximum_length = 0.01
+&end
+
+! STEP 3 - check the results
+! Here we track the with the matched lattice found in step 2. 
+&run_setup 
+    lattice = HTU_back2matching3.matched 
+        default_order = 1, 
+        use_beamline = B1, 
+        p_central_mev = 100.0, 
+        final            = %s.step3.fin, 
+        output            = %s.step3.out, 
+        centroid        = %s.step3.cen, 
+        sigma            = %s.step3.sig, 
+        final            = %s.step3.fin, 
+        parameters        = %s.step3.param, 
+        magnets            = %s.step3.mag 
+        combine_bunch_statistics = 0, 
+        concat_order             = 0, 
+        print_statistics         = 0, 
+        random_number_seed       = 987654321, 
+        tracking_updates         = 1, 
+        echo_lattice             = 0 
+&end 
+
+&twiss_output 
+    matched = 0, 
+        output_at_each_step=1, 
+        statistics = 1, 
+        filename = %s.final.twi, 
+        concat_order = 0,
+        reference_file = "step1.backtracked.twi"
+        reference_element = "SRCTOPMQ1"
+        reflect_reference_values = 1
+&end 
+
+&run_control 
+    n_steps = 1, 
+        reset_rf_for_each_step    = 1 
+&end 
+
+&bunched_beam 
+    n_particles_per_bunch = 100, 
+    bunch= %s.bun, 
+    distribution_type[0] = 3*"gaussian", 
+    distribution_cutoff[0] = 3*3, 
+    symmetrize = 0, 
+    use_twiss_command_values = 1,
+    enforce_rms_values[0] = 1,1,1, 
+    sigma_dp = 2.50000E-2, 
+    sigma_s = 1.0E-6, 
+    emit_nx = 1.5e-06, 
+    emit_ny = 1.5e-06, 
+    momentum_chirp = 0.0, 
+    halton_radix[0] =2,3,2,3,2,3, 
+    randomize_order[0] = 2,2,2 
+&end 
+
+&track &end
