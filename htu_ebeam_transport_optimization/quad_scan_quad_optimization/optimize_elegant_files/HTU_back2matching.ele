@@ -32,10 +32,10 @@
         matched = 0,
         output_at_each_step=1
         filename = step0.twi
-        beta_x = 15.1e-3, 
-        alpha_x = 34.3e-3,
-        beta_y = 10.6e-3, 
-        alpha_y = 23.8e-3,
+        beta_x = <quad_scan_beta_x>, 
+        alpha_x = <quad_scan_alpha_x>,
+        beta_y = <quad_scan_beta_y>, 
+        alpha_y = <quad_scan_alpha_y>,
         radiation_integrals =1        
 &end
 
