@@ -8,6 +8,8 @@ magnet settings, and setting the quadrupoles with new values.
 
 from __future__ import annotations
 
+from typing import Type, TYPE_CHECKING
+
 from ..types import Measurement, OptimalParameters
 from ..types import TwissParameters
 from ..types import QuadScanImage, QuadConfiguration
@@ -25,6 +27,8 @@ class DeviceParameterOptimizer:
         3. actuate - apply optimal parameters to devices
     
     """
+    def __init__(self):
+        pass
 
     def measure(self) -> Measurement:
         """ A program that quantifies the current state of the optimization target
@@ -76,36 +80,52 @@ class QuadrupoleOptimizer(DeviceParameterOptimizer):
     }
 
     def __init__(self, 
-                 quad_scan_method: str = 'manual',
-                 quad_optimize_method: str = 'elegant',
-                 quad_set_method: str = 'manual',
+                 twiss_parameter_measure_program: str | Type[measure_programs.QuadScanProgram] = 'manual',
+                 quad_optimize_program: str | Type[optimize_programs.QuadOptimizeProgram] = 'elegant',
+                 quad_set_program: str | Type[actuate_programs.QuadSetProgram] = 'manual',
                 ): 
         """
         Parameters
         ----------
-        quad_scan_method : str, optional
-            _description_, by default 'manual'
-        quad_optimize_method : str, optional
-            _description_, by default 'elegant'
-        quad_set_method : str, optional
-            _description_, by default 'manual'
+        twiss_parameter_measure_program : str or QuadScanProgram subclass
+            A program - or name of one of the programs in MEASURE_PROGRAMS - 
+            implementing a measure_twiss_parameters() method that returns the 
+            Twiss parameters at screen ALine 3
+        quad_optimize_program : str or QuadOptimizeProgram subclass
+            A program - or name of one of the programs in OPTIMIZE_PROGRAMS - 
+            that calculates the optimal new quadrupole parameters in order to 
+            obtain matching at the undulator entrance.
+        quad_set_program : str or QuadSetProgram subclass
+            A program - or name of one of the programs in ACTUATE_PROGRAMS - 
+            that applies the given parameters to the quadrupoles.
+            
         """
 
-        self.quad_scan_program: measure_programs.QuadScanProgram = self.MEASURE_PROGRAMS[quad_scan_method]()
-        self.quad_optimize_program: optimize_programs.QuadOptimizeProgram = self.OPTIMIZE_PROGRAMS[quad_optimize_method]()
-        self.quad_set_program: actuate_programs.QuadSetProgram = self.ACTUATE_PROGRAMS[quad_set_method]()
+        if isinstance(twiss_parameter_measure_program, str):
+            twiss_parameter_measure_program = self.MEASURE_PROGRAMS[twiss_parameter_measure_program]
+        if isinstance(quad_optimize_program, str):
+            quad_optimize_program = self.OPTIMIZE_PROGRAMS[quad_optimize_program]
+        if isinstance(quad_set_program, str):
+            quad_set_program = self.ACTUATE_PROGRAMS[quad_set_program]
 
+        self.quad_scan_program: measure_programs.QuadScanProgram = twiss_parameter_measure_program()
+        self.quad_optimize_program: optimize_programs.QuadOptimizeProgram = quad_optimize_program()
+        self.quad_set_program: actuate_programs.QuadSetProgram = quad_set_program()
 
-    def measure(self):
-        twiss_parameters: TwissParameters = self.quad_scan_program.run_quad_scan()
-        return twiss_parameters
+    def measure(self) -> TwissParameters:
+        return self.quad_scan_program.measure_twiss_parameters()
     
-    def optimize(self, twiss_parameters: TwissParameters):
-        optimal_quad_configuration: QuadConfiguration = self.quad_optimize_program.run_optimization(twiss_parameters)
-        return optimal_quad_configuration
+    def optimize(self, twiss_parameters: TwissParameters) -> QuadConfiguration:
+        return self.quad_optimize_program.run_optimization(twiss_parameters)
 
     def actuate(self, optimal_quad_parameters: QuadConfiguration):
         self.quad_set_program.set_quad_properties(optimal_quad_parameters)
+        # TODO: also need to keep track of optimal_quad_parameters to modify 
+        # lattice file
+
+    def stop_criteria(self) -> bool:
+        # TODO
+        return True
 
 if __name__ == "__main__":
     qo = QuadrupoleOptimizer()

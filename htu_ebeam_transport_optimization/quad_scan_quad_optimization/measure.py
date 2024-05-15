@@ -3,13 +3,18 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..types import TwissParameters
+
 class QuadScanProgram:
     """Base class for a program that runs a quadrupole magnet scan
     """
     def __init__(self):
         pass
 
-    def run_quad_scan(self):
+    def measure_twiss_parameters(self) -> TwissParameters:
         raise NotImplementedError("run_quad_scan() should be implemented by derived class")
 
 class ManualQuadScan(QuadScanProgram):
@@ -18,7 +23,7 @@ class ManualQuadScan(QuadScanProgram):
     def __init__(self):
         super().__init__()
     
-    def run_quad_scan(self):
+    def measure_twiss_parameters(self) -> TwissParameters:
         pass
 
 class GEECSPythonAPIQuadScan(QuadScanProgram):
@@ -27,6 +32,6 @@ class GEECSPythonAPIQuadScan(QuadScanProgram):
     def __init__(self):
         super().__init__()
 
-    def run_quad_scan(self):
+    def measure_twiss_parameters(self) -> TwissParameters:
         pass
 

@@ -18,6 +18,7 @@ from .. import ureg
 
 if TYPE_CHECKING:
     import numpy as np
+    from ..types import Measurement, OptimalParameters
 
 class QuadOptimizeProgram:
     """Abstract base class for a program that calculates optimal quadrupole configuration
@@ -25,7 +26,7 @@ class QuadOptimizeProgram:
     def __init__(self):
         pass
 
-    def run_optimization(self, quad_scan_images: list[QuadScanImage]) -> QuadConfiguration:
+    def run_optimization(self, measurement: Measurement) -> OptimalParameters:
         raise NotImplementedError("Derived class should implement run_optimization()")
 
 class ElegantOptimizer(QuadOptimizeProgram):
@@ -38,10 +39,7 @@ class ElegantOptimizer(QuadOptimizeProgram):
     def __init__(self):
         super.__init__()
     
-    def _calculate_twiss_parameters(self, quad_scan_images: list[QuadScanImage]) -> TwissParameters:
-        pass
-
-    def _run_elegant_optimization(self, twiss_parameters: TwissParameters) -> QuadConfiguration:
+    def run_optimization(self, twiss_parameters: TwissParameters) -> QuadConfiguration:
         
         # We copy the elegant files to a temporary directory to prevent the output 
         # files, which are written to the same directory, from cluttering it. 
@@ -84,9 +82,6 @@ class ElegantOptimizer(QuadOptimizeProgram):
                 EMQ3_k1 = elegant_parameter_output_dict[('EMQ3H', 'K1')] * ureg.meter**-2,
             )
 
-    def run_optimization(self, quad_scan_images: list[QuadScanImage]) -> QuadConfiguration:
-        twiss_parameters = self._calculate_twiss_parameters(quad_scan_images)
-        return self._run_elegant_optimization(twiss_parameters)
 
 class RSOptOptimizer(QuadOptimizeProgram):
     """ Use RSOpt to optimize quadrupole settings
