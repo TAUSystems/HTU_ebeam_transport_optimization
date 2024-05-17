@@ -3,52 +3,6 @@
     exact_normalized_emittance = 1 
 &end 
 
-!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!+++++++++++++++++++++++++++ Zero step++++++++++++++++++++++++++
-!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-! This step is only to create a twiss elegant file with the initial values from the EMQ-3 scan (#22)
-! onto screen A3 on 8/8/23. There should be a different way to do it but this is an easy solution. 
-
-!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-&run_setup
-        lattice = step0.lte,
-        default_order = 1,
-        use_beamline = "simple",
-        p_central_mev = 100.0
-	    rootname = scan-Q,
-        magnets = %s.step0.mag
-	    final = %s.step0.fin
-	    centroid = %s.step0.cen
-        back_tracking = 0
-&end
-
-!=======================================================
-! Set the twiss parameters from the HTU experiment here:
-!=======================================================
-&twiss_output
-        matched = 0,
-        output_at_each_step=1
-        filename = step0.twi
-        beta_x = 15.1e-3, 
-        alpha_x = 34.3e-3,
-        beta_y = 10.6e-3, 
-        alpha_y = 23.8e-3,
-        radiation_integrals =1        
-&end
-
-&run_control
-!	n_indices = 1
-&end
-
-&bunched_beam
-&end
-
-&track &end
-
-
 !++++++++++++++++++++++First step (back tracking)++++++++++++++++++++++++++
 ! This step backtracks from the end of BB line defined in HTU_base_lattice.lte file. 
 ! elegant flag  back_tracking = 1 need to be set, the backtrack is performed from the last element.
@@ -57,7 +11,7 @@
 
 &run_setup 
 
-    lattice = HTU_base_lattice_matched.lte
+    lattice = refopt.matched
         default_order = 1, 
         use_beamline = BB, 
         p_central_mev = 100.0, 
@@ -77,21 +31,18 @@
         back_tracking = 1 
 &end 
 
-!============================================================
-! READING the twiss parameters from the zero step; the "_BEG_" string means its reading from inputs.twi the value
-! of the twiss parameters from at the beguinning in this case at A3 screen.
-!============================================================
-
-&twiss_output 
-    matched = 0, 
-        output_at_each_step=1, 
-        statistics = 1, 
-        filename = step1.backtracked.twi, 
-        concat_order = 0 
-        reference_file = "step0.twi"
-        reference_element = "_BEG_" 
-        reflect_reference_values = 0
-&end 
+&twiss_output
+        matched = 0,
+        output_at_each_step=1,
+        statistics = 1,
+        filename = step1.backtracked.twi,
+        concat_order = 0,
+        beta_x = <htu_quadscan_beta_x>, 
+        alpha_x = <htu_quadscan_alpha_x>,
+        beta_y = <htu_quadscan_beta_y>, 
+        alpha_y = <htu_quadscan_alpha_y>,
+        radiation_integrals =1        
+&end
 
 &run_control 
     n_steps = 1, 

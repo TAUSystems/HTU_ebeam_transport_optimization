@@ -1,0 +1,167 @@
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!ReferenceEMQValues
+
+!Description:
+
+! This input parameter matches Guillaume's calculated twiss parameters at A3 (by optimizing 
+the EMQ strengths triplets and SRCTOPMQ1 distance):
+
+!   betax  = 1.510000e-02 
+!   alphax = 3.430000e-02 
+!   betay  = 1.060000e-02
+!   alphay = 2.380000e-02 
+
+! From the initial values at Target:
+!    beta_x = 2e-3
+!    alpha_x = 0.0
+!    beta_y = 2e-3 
+!    alpha_y = 0.0
+
+! The optimized values that calculates this input file are:
+!             New values:                            Old values (from S.B.)
+SRCTOPMQ1: L=0.02623                                       L=0.046 
+EMQ1H: K1=8.1046 (0.3098 Amp)                              K1=6.2790  (0.2400 Amp)
+EMQ2V: K1=-9.1217 (0.3487 Amp)                             K1=-7.7327 (-0.2956 Amp)
+EMQ3H: K1=11.9101 (0.4553 Amp)                             K1= 9.7940 (0.3744 Amp)
+
+! The final lattice file is "refopt.matched" which it is then use in the HTU_back2matching.ele example. 
+
+! NOTE: I think the optimization function can be improved. 
+
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! We use "HTU_base_lattice_matched.lte" as base lattice file found at the github repo:
+! https://github.com/TAUSystems/HTU_ebeam_transport_optimization/tree/back2target
+
+! The beamline I am using is one that goes from Target to A3 only, called BB
+
+&run_setup 
+    lattice = HTU_base_lattice_matched.lte
+        default_order = 1, 
+        use_beamline = BB, 
+        p_central_mev = 100.0, 
+        final            = %s.opt.fin, 
+        output            = %s.opt.out, 
+        centroid        = %s.opt.cen, 
+        sigma            = %s.opt.sig, 
+        final            = %s.opt.fin, 
+        parameters        = %s.opt.param, 
+        magnets            = %s.opt.mag 
+        combine_bunch_statistics = 0, 
+        concat_order             = 0, 
+        print_statistics         = 0, 
+        random_number_seed       = 987654321, 
+        tracking_updates         = 1, 
+        echo_lattice             = 0, 
+        back_tracking = 0 
+&end 
+  
+&twiss_output
+        matched = 0,
+        output_at_each_step=1,
+        statistics = 1, 
+        filename = refopt.twi
+        beta_x  = <initial_beta_x>, 
+        alpha_x = <initial_alpha_x>,
+        beta_y  = <initial_beta_y>, 
+        alpha_y = <initial_alpha_y>,
+        radiation_integrals =1        
+&end
+
+&run_control 
+    n_steps = 1, 
+        reset_rf_for_each_step    = 1 
+&end 
+ 
+! Link all the bends in the chicane to the first 
+&link_elements target=BEND1, source=BEND1, item=E2, equation=ANGLE, &end 
+&link_elements target=BEND2, source=BEND1, item=ANGLE, equation="0 ANGLE -", &end 
+&link_elements target=BEND2, source=BEND1, item=E1, equation="0 ANGLE -", &end 
+&link_elements target=BEND3, source=BEND1, item=ANGLE, equation="0 ANGLE -", &end 
+&link_elements target=BEND3, source=BEND1, item=E2, equation="0 ANGLE -", &end 
+&link_elements target=BEND4, source=BEND1, item=ANGLE, equation=ANGLE, &end 
+&link_elements target=BEND4, source=BEND1, item=E1, equation=ANGLE, &end 
+ 
+&link_elements target=BEND2, source=BEND1, item=L, equation=L, &end 
+&link_elements target=BEND3, source=BEND1, item=L, equation=L, &end 
+&link_elements target=BEND4, source=BEND1, item=L, equation=L, &end 
+ 
+&optimization_setup 
+    mode = "minimize", method = "simplex", 
+        target = 1e-8, 
+        tolerance = 1e-16, n_passes = 2, n_evaluations = 1000, log_file = /dev/tty, 
+        n_restarts = 10, 
+        verbose = 0, output_sparsing_factor = 10 
+&end 
+ 
+! HERE we set define the optimization terms in this example together: (betax -0.43 )^2 + (betay -0.19 )^2 + alphax^2 + alphay^2
+!100 MeV 
+&optimization_term term = "betax 1.510000e-02 - " &end 
+&optimization_term term = "betay 1.060000e-02 - " &end 
+
+&optimization_term term = "alphax 3.430000e-02 - " &end 
+&optimization_term term = "alphay 2.380000e-02 - " &end 
+  
+! The optimization parameter in this case are the position of the EMQ triplet relative to the source,
+! and the currents of EMQ1, EMQ2 and EMQ3. 
+
+&optimization_variable 
+    name = SRCTOPMQ1, item=L, lower_limit=0.025, upper_limit=0.2, step_size = 0.000005 &end  
+&optimization_variable 
+    name = EMQ1H, item=K1, lower_limit=-60, upper_limit=60, step_size = 0.01 &end 
+&optimization_variable 
+    name = EMQ2V, item=K1, lower_limit=-60, upper_limit=60, step_size = 0.01 &end 
+&optimization_variable 
+    name = EMQ3H, item=K1, lower_limit=-60, upper_limit=60, step_size = 0.01 &end 
+ 
+
+&bunched_beam 
+&end 
+ 
+&optimize summarize_setup=1 &end 
+ 
+&save_lattice filename = refopt.matched &end 
+
+! Testing it:
+
+&run_setup 
+    lattice = refopt.matched 
+        default_order = 1, 
+        use_beamline = BB, 
+        p_central_mev = 100.0, 
+        final            = opt.fin, 
+        output            = opt.out, 
+        centroid        = opt.cen, 
+        sigma            = opt.sig, 
+        final            = opt.fin, 
+        parameters        = opt.param, 
+        magnets            = opt.mag 
+        combine_bunch_statistics = 0, 
+        concat_order             = 0, 
+        print_statistics         = 0, 
+        random_number_seed       = 987654321, 
+        tracking_updates         = 1, 
+        echo_lattice             = 0 
+&end 
+
+&twiss_output
+        matched = 0,
+        output_at_each_step=1,
+        statistics = 1, 
+        filename = backopt.final.twi
+        beta_x = 2e-3, 
+        alpha_x = 0,
+        beta_y = 2e-3, 
+        alpha_y = 0,
+        radiation_integrals =1        
+&end 
+
+&run_control 
+    n_steps = 1, 
+        reset_rf_for_each_step    = 1 
+&end 
+
+&bunched_beam 
+
+&end 
+
+&track &end

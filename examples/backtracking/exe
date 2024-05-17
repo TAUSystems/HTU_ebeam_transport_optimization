@@ -1,0 +1,6 @@
+elegant ReferenceEMQValues.ele -macro=initial_beta_x=2e-3,initial_alpha_x=0.0,initial_beta_y=2e-3,initial_alpha_y=0.0
+echo "DONE WITH THE REFERENCE EMQ VALUES"
+elegant HTU_back2matching.ele -macro=htu_quadscan_beta_x=15.1e-3,\
+htu_quadscan_alpha_x=34.3e-3,htu_quadscan_beta_y=10.6e-3,htu_quadscan_alpha_y=23.8e-3
+
+echo "DONE MATCHING TO UNDULATOR"

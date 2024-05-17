@@ -9,20 +9,17 @@ This example:
 From Twiss parameters found on screen A3 in the HTU beam line (calculated from the EMQ-3 scan (#22) on 8/8/23) this example:
 
 1. Back propagates and calculate the twiss parameters at SRCTOPMQ1 position.
-2. The twiss parameters found at SRCTOPMQ1 are propagate forward and the strength values of EMQ1H, EMQ2V, EMQ3H and the distance SRCTOPMQ1 are optimized to match the twiss parameters at the entrance of the undulatory. 
+2. The twiss parameters found at SRCTOPMQ1 are propagate forward and the strength values of EMQ1H, EMQ2V, EMQ3H and the distance SRCTOPMQ1 are optimized to match the twiss parameters at the entrance of the undulator. 
+
+The executable "exe" generates several output sdds files but the final values of EMQ1, EMQ2 and EMQ3 are stored in the HTU_back2matching3.matched ,The optimization out of the box values are : 
 
 
-The command elegant HTU_back2matching.ele generates several output sdds files but the final values of EMQ1, EMQ2 and EMQ3 are stored in the HTU_base_lattice_matched.lte. The optimization out of the box values are : 
+SRCTOPMQ1: EDRIFT,L=0.04859575717160142
+EMQ1H: KQUAD,L=0.1408,K1=3.587060939234804
+EMQ2V: KQUAD,L=0.28141,K1=-6.59797014104015
+EMQ3H: KQUAD,L=0.1409,K1=9.686827748419681
 
-
-SRCTOPMQ1: EDRIFT,L=0.05311304357681505
-EMQ1H: KQUAD,L=0.1408,K1=-1.330551668500184,N_SLICES=10
-EMQ2V: KQUAD,L=0.28141,K1=-0.07192547430026644,N_SLICES=20
-EMQ3H: KQUAD,L=0.1409,K1=-2.401687132513245,N_SLICES=10
-
-Note: Extra description can be found in the .ele and .lte files. There's a possible conversion issue that its being fixed in the mean time the initial strength values of EMQ1H,EMQ2V and EMQ3H are just the one found in HTU_base_lattice_matched.lte file found in the folder base_lte_ele_files of this repo.
-
-
+Note: Extra description can be found in the .ele and .lte files. The reference values from SRCTOPMQ1, EMQ1H,EMQ2V and EMQ3H are calculated by the file ReferenceEMQValues.ele
 
 Future improvements and current work:
 
@@ -39,7 +36,7 @@ the retrieved values need to be converted if they want to be useful for operator
 
 1. Need to discuss what is the best optimization function and modify accordingly, For now, this examples uses the one defined in the input file HTU_match_fodo.ele file found in the folder base_lte_ele_files of this repo.  
 
-2. Need to decide where to end the back propagation and set the wher the optimization matching should be (entrance of undulator or A3).   
+2. Need to decide where to end the back propagation and set the where the optimization matching should be (entrance of undulator or A3).   
 
 3. Review the lattice configuration, check if the lattice is actually matching with the actual HTU on site beam line. 
 
