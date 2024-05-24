@@ -10,10 +10,10 @@ if TYPE_CHECKING:
     from geecs_python_api.controls.api_defs import ScanTag
     from pathlib import Path
 
-from htu_scripts.analysis.quad_scan_analysis import QuadScanAnalysis
+from geecs_python_api.analysis.scans.quad_scan_analysis import QuadAnalysis
 from geecs_python_api.controls.experiment.htu import HtuExp
-from geecs_python_api.analysis.images.scans.scan_data import ScanData
-from geecs_python_api.analysis.images.scans.scan_images import ScanImages
+from geecs_python_api.analysis.scans.scan_data import ScanData
+from geecs_python_api.analysis.scans.scan_images import ScanImages
 from geecs_python_api.tools.images.filtering import FiltersParameters
 
 class QuadScanProgram:

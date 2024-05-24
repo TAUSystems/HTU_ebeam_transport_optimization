@@ -34,7 +34,7 @@ pint = "0.22"
 imageio = "^2.30"
 matplotlib = "^3.7"
 xopt = "^2.0"
-geecs-pythonapi = { git = "https://github.com/GEECS-BELLA/GEECS-Plugins.git", rev = "28968d47c0bb6412c6fc966842963386a8361342", subdirectory = "GEECS-PythonAPI" }
+geecs-pythonapi = { git = "https://github.com/GEECS-BELLA/GEECS-Plugins.git", rev = "4745ea5aeb66c77842907bd4425d9e1778feba61", subdirectory = "GEECS-PythonAPI" }
 
 [tool.poetry.group.rsopt_simulation_manager.dependencies]
 # tau_simulation_manager = { git = "https://github.com/TAUSystems/TAU_simulation_manager.git", rev = "d1632686a7d6e935a761e4bcc256be61f1f44957" }
