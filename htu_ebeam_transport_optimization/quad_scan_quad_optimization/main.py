@@ -10,13 +10,12 @@ from __future__ import annotations
 
 from typing import Type, TYPE_CHECKING
 
-from ..types import Measurement, OptimalParameters
-from ..types import TwissParameters
-from ..types import QuadScanImage, QuadConfiguration
-
 from . import measure as measure_programs
 from . import optimize as optimize_programs
 from . import actuate as actuate_programs
+
+if TYPE_CHECKING:
+    from ..types import Measurement, OptimalParameters, QuadScanMeasurement, QuadConfiguration 
 
 class DeviceParameterOptimizer:
     """ Program that iteratively adjusts device settings to optimize a target
@@ -65,7 +64,7 @@ class QuadrupoleOptimizer(DeviceParameterOptimizer):
 
     MEASURE_PROGRAMS = {
         'manual': measure_programs.ManualQuadScan,
-        'geecs_python_api': measure_programs.GEECSPythonAPIQuadScan,
+        'geecs_python_api': measure_programs.GEECSPythonAPITwissQuadScan,
     }
 
     OPTIMIZE_PROGRAMS = {
@@ -112,11 +111,11 @@ class QuadrupoleOptimizer(DeviceParameterOptimizer):
         self.quad_optimize_program: optimize_programs.QuadOptimizeProgram = quad_optimize_program()
         self.quad_set_program: actuate_programs.QuadSetProgram = quad_set_program()
 
-    def measure(self) -> TwissParameters:
-        return self.quad_scan_program.measure_twiss_parameters()
-    
-    def optimize(self, twiss_parameters: TwissParameters) -> QuadConfiguration:
-        return self.quad_optimize_program.run_optimization(twiss_parameters)
+    def measure(self) -> QuadScanMeasurement:
+        return self.quad_scan_program.measure()
+
+    def optimize(self, measurement: QuadScanMeasurement) -> QuadConfiguration:
+        return self.quad_optimize_program.run_optimization(measurement)
 
     def actuate(self, optimal_quad_parameters: QuadConfiguration):
         self.quad_set_program.set_quad_properties(optimal_quad_parameters)

@@ -1,7 +1,7 @@
 from typing import NamedTuple, NewType, Annotated, Any
 from numpy.typing import NDArray
 
-Measurement = NewType("Measurement", Any)
+# Measurement = NewType("Measurement", Any)
 OptimalParameters = NewType("OptimalParameters", Any)
 
 from pint import Quantity
@@ -11,6 +11,7 @@ LengthQuantity = NewType("LengthQuantity", Annotated[Quantity, '[length]'])
 InverseLengthSquaredQuantity = NewType("InverseLengthSquaredQuantity", Annotated[Quantity, '[length]^-2'])
 LengthPerAngleQuantity = NewType("LengthPerAngleQuantity", Annotated[Quantity, '[length] / [angle]'])
 LengthAngleQuantity = NewType("LengthAngleQuantity", Annotated[Quantity, '[length] * [angle]'])
+CurrentQuantity = NewType("CurrentQuantity", Annotated[Quantity, '[current]'])
 
 # a run_quad_scan() result is a list of QuadScanImage 
 class QuadScanImage(NamedTuple):
@@ -35,3 +36,13 @@ class TwissParameters(NamedTuple):
     alpha_y: float | DimensionlessQuantity
     emittance_x: LengthAngleQuantity
     emittance_y: LengthAngleQuantity
+
+class Measurement(NamedTuple):
+    pass
+
+class QuadScanMeasurement(Measurement):
+    pass
+
+class GEECSPythonAPITwissQuadScanMeasurement(QuadrupoleOptimizerMeasurement):
+    twiss_parameters: TwissParameters
+    emq3_current: CurrentQuantity

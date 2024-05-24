@@ -6,7 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import TwissParameters
+    from ..types import QuadScanMeasurement, TwissParameters, GEECSPythonAPITwissQuadScanMeasurement
     from geecs_python_api.controls.api_defs import ScanTag
     from pathlib import Path
 
@@ -15,15 +15,27 @@ from geecs_python_api.controls.experiment.htu import HtuExp
 from geecs_python_api.analysis.scans.scan_data import ScanData
 from geecs_python_api.analysis.scans.scan_images import ScanImages
 from geecs_python_api.tools.images.filtering import FiltersParameters
+from geecs_python_api.tools.interfaces.prompts import text_input
+
+from .. import ureg
 
 class QuadScanProgram:
     """Base class for a program that runs a quadrupole magnet scan
+
+    This implements the measure step of the quadrupole optimization
+
+    Methods
+    -------
+    measure()
+        Runs a quadrupole magnet scan and returns the Twiss parameters, as well 
+        as the current of that quadrupole magnet that should be used during the 
+        optimization step.
     """
     def __init__(self):
         pass
 
-    def measure_twiss_parameters(self) -> TwissParameters:
-        raise NotImplementedError("run_quad_scan() should be implemented by derived class")
+    def measure(self) -> QuadScanMeasurement:
+        raise NotImplementedError("measure() should be implemented by derived class")
 
 class ManualQuadScan(QuadScanProgram):
     """ Requests an operator to run a quadrupole magnet scan
@@ -31,11 +43,11 @@ class ManualQuadScan(QuadScanProgram):
     def __init__(self):
         super().__init__()
     
-    def measure_twiss_parameters(self) -> TwissParameters:
+    def measure(self):
         pass
 
-class GEECSPythonAPIQuadScan(QuadScanProgram):
-    """ Uses GEECS-PythonAPI to run a quadrupole magnet scan
+class GEECSPythonAPITwissQuadScan(QuadScanProgram):
+    """ Uses GEECS-PythonAPI to run a quadrupole magnet scan to obtain Twiss parameters
     """
     camera: str = 'A3'
 
@@ -49,27 +61,64 @@ class GEECSPythonAPIQuadScan(QuadScanProgram):
         self.htu = HtuExp(get_info=True)
         self.htu.connect(laser=False, jet=False, diagnostics=False, transport=True)
 
-    def run_quad_scan(self) -> ScanTag:
+    def run_quad_scan(self) -> Path:
+        """
+        """
         scan_path, scan_number, command_accepted, scan_timed_out = \
-            self.htu.transport.quads.scan_current(self.emq_number, 1.23, 1.23)
+            self.htu.transport.quads.scan_current(self.emq_number, xxx, xxx, xxx, xxx)
 
         return scan_path
 
-    def analyze_quad_scan(self, scan_folder: Path):
+    def analyze_quad_scan(self, scan_folder: Path) -> GEECSPythonAPITwissQuadScanMeasurement:
         scan_data = ScanData(scan_folder, ignore_experiment_name=self.htu.is_offline)
         scan_images = ScanImages(scan_data, self.camera)
         quad_analysis = QuadAnalysis(scan_data, scan_images, self.emq_number, fwhms_metric='median', quad_2_screen=self.quad_to_screen_distance)
 
-        _filters = FiltersParameters(contrast=1.333, hp_median=2, hp_threshold=3., denoise_cycles=0, gauss_filter=5.,
+        filters = FiltersParameters(contrast=1.333, hp_median=2, hp_threshold=3., denoise_cycles=0, gauss_filter=5.,
                                     com_threshold=0.8, bkg_image=None, box=True, ellipse=False)
 
-        # scan analysis
-        # --------------------------------------------------------------------------
-        path = quad_analysis.analyze(None, initial_filtering=_filters, ask_rerun=False, blind_loads=True,
-                                     store_images=False, store_scalars=False, save_plots=False, save=False)
+        quad_analysis.analyze(None, initial_filtering=filters, ask_rerun=False, blind_loads=True,
+                              store_images=False, store_scalars=False, save_plots=False, save=False)
         
+        # The most reliable Twiss parameters come from the com_ij (center of mass) position
+        quad_analysis_twiss_parameters: dict = quad_analysis.data_dict['twiss']['com_ij']
+        twiss_parameters_out = TwissParameters(
+            beta_x = quad_analysis_twiss_parameters['beta_x'] * ureg.meter / ureg.radian,
+            beta_y = quad_analysis_twiss_parameters['beta_y'] * ureg.meter / ureg.radian,
+            alpha_x = quad_analysis_twiss_parameters['alpha_x'] * ureg.dimensionless,
+            alpha_y = quad_analysis_twiss_parameters['alpha_y'] * ureg.dimensionless,
+            emittance_x = quad_analysis_twiss_parameters['epsilon_x'] * ureg.meter * ureg.radian,
+            emittance_y = quad_analysis_twiss_parameters['epsilon_y'] * ureg.meter * ureg.radian
+        )
 
-    def measure_twiss_parameters(self) -> TwissParameters:
+        def select_emq3_current():
+            """ Choose either setpoint_at_fit_min for sigma_x or sigma_y
+            
+            For the optimization step, one of the quad scan currents needs to be 
+            selected as the EMQ3 current during backpropagation. It can be the 
+            current that minimizes either sigma_x or sigma_y. This function makes 
+            that selection, using operator insight based on plots generated by 
+            quad_analysis.analyze().
+            """
+
+            xy_selection = text_input("Use current that minimizes sigma in x or y direction? (x/y)")
+            if xy_selection == 'x':
+                return quad_analysis.data_dict['twiss']['setpoint_at_fit_min'][1]
+            elif xy_selection == 'y':
+                return quad_analysis.data_dict['twiss']['setpoint_at_fit_min'][0]
+            else:
+                raise ValueError("Invalid selection")
+
+        return GEECSPythonAPITwissQuadScanMeasurement(
+            twiss_parameters = twiss_parameters_out, 
+            emq3_current = select_emq3_current() * ureg.ampere
+        )
+
+    def measure(self) -> GEECSPythonAPITwissQuadScanMeasurement:
+        """
+        Returns
+        -------
+        GEECSPythonAPITwissQuadScanMeasurement
+        """
         scan_path = self.run_quad_scan()
-        self.analyze_quad_scan(scan_path)
-
+        return self.analyze_quad_scan(scan_path)
